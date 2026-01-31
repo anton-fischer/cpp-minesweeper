@@ -47,13 +47,25 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QSpinBox" name="input_BoardSizeX"/>
+     <widget class="QSpinBox" name="input_BoardSizeX">
+      <property name="value">
+       <number>5</number>
+      </property>
+     </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QSpinBox" name="input_BoardSizeY"/>
+     <widget class="QSpinBox" name="input_BoardSizeY">
+      <property name="value">
+       <number>5</number>
+      </property>
+     </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QSpinBox" name="input_BombCount"/>
+     <widget class="QSpinBox" name="input_BombCount">
+      <property name="value">
+       <number>10</number>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="lbl_BoardSizeY">

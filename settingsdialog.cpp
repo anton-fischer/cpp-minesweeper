@@ -24,4 +24,3 @@ void SettingsDialog::on_buttonBox_accepted()
         QMessageBox::warning(this, "Invalid Input", "Please check your input");
     }
 }
-

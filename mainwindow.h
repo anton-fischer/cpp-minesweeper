@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QToolButton>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLCDNumber>
 
 #include <vector>
+#include "board.h"
+#include "tilebutton.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,17 +24,25 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_2_clicked();
+    void tileUpdated(const unsigned int x, unsigned int y);
+    void boardUpdated();
 
+    void on_pushButton_2_clicked();
     void on_btn_restart_clicked();
+
+    void on_btn_exit_clicked();
 
 private:
     Ui::MainWindow *ui;
 
-    void handleTileClick(const unsigned int x, const unsigned int y);
+    void createNewBoard();
 
-    void appendScoreBoard(const std::string playerName, const unsigned int score);
+    void handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button);
+    void appendScoreBoard(const std::string& playerName, const unsigned int score);
 
-    std::vector<std::vector<QToolButton*>> board;
+    Board* board = nullptr;
+    QGridLayout* boardGrid = nullptr;
+
+    std::vector<std::vector<TileButton*>> boardGridTiles;
     std::vector<QHBoxLayout*> scoreboards;
 };
