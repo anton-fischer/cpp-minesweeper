@@ -23,6 +23,8 @@ Board::Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const
     for (auto& column : board) {
         column.resize(boardSizeX);
     }
+
+    flagCount = bombCount;
 };
 
 void Board::initBoard(const unsigned int startX, const unsigned int startY) {
@@ -34,7 +36,7 @@ void Board::initBoard(const unsigned int startX, const unsigned int startY) {
     isInitialized = true;
 
     qDebug() << "Finished generating board";
-    emit boardUpdated(board);
+    emit boardUpdated();
 }
 
 void Board::generateBombs(const unsigned int startX, const unsigned int startY) {
@@ -89,18 +91,37 @@ void Board::generateTileNumbers() {
     qDebug() << "Successfully generated tile numbers";
 }
 
-bool Board::placeFlag(const unsigned int x, const unsigned int y) {
-    board[y][x].setIsFlag(!board[y][x].getIsFlag());
+void Board::placeFlag(const unsigned int x, const unsigned int y) {
+    if (board[y][x].getIsFlag()) {
+        board[y][x].setIsFlag(false);
+        progress--;
+        flagCount++;
+    } else if (flagCount == 0) { // in this case cancel, as no new flag can be placed
+        return;
+    } else {
+        board[y][x].setIsFlag(true);
+        progress++;
+        flagCount--;
+    }
+
+    if (progress >= boardSizeX * boardSizeY) {
+        handleGameWon(x, y);
+    }
 
     emit tileUpdated(x, y);
-    return true;
 }
 
-bool Board::revealTile(const unsigned int x, const unsigned int y) {
+void Board::revealTile(const unsigned int x, const unsigned int y) {
     if (!isInitialized) initBoard(x, y);
-    if (board[y][x].getIsFlag()) return true;
+    if (board[y][x].getIsFlag()) return;
+
+    if (board[y][x].getIsBomb()) {
+        handleBombHit(x, y);
+        return;
+    }
 
     board[y][x].setIsCovered(false);
+    progress++;
     emit tileUpdated(x, y);
 
     if (board[y][x].getNumber() == 0) { // in case of 0 also uncover every neighbour tile
@@ -116,7 +137,41 @@ bool Board::revealTile(const unsigned int x, const unsigned int y) {
         }
     }
 
-    return true;
+    if (progress >= boardSizeX * boardSizeY) {
+        handleGameWon(x, y);
+        return;
+    }
+}
+
+void Board::revealAllTiles() {
+    for (unsigned int y = 0; y < boardSizeY; ++y) {
+        for (unsigned int x = 0; x < boardSizeX; ++x) {
+            //if (board[y][x].getIsFlag()) placeFlag(x, y); // also remove all flags
+
+            board[y][x].setIsCovered(false);
+            emit tileUpdated(x, y);
+        }
+    }
+}
+
+void Board::handleBombHit(const unsigned int x, const unsigned int y) {
+    qDebug() << "Bomb hit detected";
+
+    emit tileUpdated(x, y);
+
+    revealAllTiles();
+
+    emit bombHit();
+}
+
+void Board::handleGameWon(const unsigned int x, const unsigned int y) {
+    qDebug() << "Game won detected";
+
+    emit tileUpdated(x, y);
+
+    revealAllTiles();
+
+    emit gameWon();
 }
 
 std::vector<std::vector<Tile>> Board::getBoard() const {
@@ -125,4 +180,12 @@ std::vector<std::vector<Tile>> Board::getBoard() const {
 
 Tile Board::getTile(const unsigned int x, const unsigned int y) const {
     return this->board.at(y).at(x);
+}
+
+unsigned int Board::getProgress() const {
+    return this->progress;
+}
+
+unsigned int Board::getFlagCount() const {
+    return this->flagCount;
 }

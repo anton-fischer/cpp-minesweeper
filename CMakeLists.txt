@@ -28,6 +28,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         settingsDialog.h settingsDialog.cpp settingsDialog.ui
         settings.h settings.cpp
         tilebutton.h tilebutton.cpp
+        player.h player.cpp
+        filehandler.h filehandler.cpp
+        resources.qrc
 
     )
 # Define target properties for Android with Qt 6 as:

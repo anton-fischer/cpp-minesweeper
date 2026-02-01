@@ -1,15 +1,23 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QMessageBox>
+#include <QLayout>
+#include <QSizePolicy>
+
 #include "settingsDialog.h"
 #include "settings.h"
+#include "player.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    ui->setupUi(this);    
     ui->progressbar->setValue(0);
+    ui->scrollboards_container->setAlignment(Qt::AlignTop);
+
+    this->setWindowTitle("Minesweeper");
 
     createNewBoard();
 }
@@ -26,6 +34,9 @@ void MainWindow::createNewBoard() {
     connect(board, &Board::boardUpdated, this, &MainWindow::boardUpdated);
     connect(board, &Board::tileUpdated, this, &MainWindow::tileUpdated);
 
+    connect(board, &Board::bombHit, this, &MainWindow::bombHit);
+    connect(board, &Board::gameWon, this, &MainWindow::gameWon);
+
     boardUpdated();
 }
 
@@ -36,17 +47,19 @@ void MainWindow::handleTileClick(const unsigned int x, const unsigned int y, con
     else if (button == Qt::RightButton) board->placeFlag(x, y);
 }
 
-void MainWindow::appendScoreBoard(const std::string& playerName, const unsigned int score) {
+void MainWindow::appendScoreBoard(Player& player) {
     auto* widget = new QWidget(this);
     auto* layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0,0,0,0);
 
-    auto* nameLabel = new QLabel(QString::fromStdString(playerName), widget);
+    auto* nameLabel = new QLabel(QString::fromStdString(player.getName()), widget);
     nameLabel->setMaximumWidth(50);
+    nameLabel->setMaximumHeight(20);
 
     auto* scoreDisplay = new QLCDNumber(widget);
-    scoreDisplay->display(static_cast<int>(score));
+    scoreDisplay->display(static_cast<int>(player.getScore()));
     scoreDisplay->setDigitCount(5);
+    scoreDisplay->setMaximumHeight(20);
 
     layout->addWidget(nameLabel);
     layout->addWidget(scoreDisplay);
@@ -56,7 +69,8 @@ void MainWindow::appendScoreBoard(const std::string& playerName, const unsigned 
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    appendScoreBoard("asdasd", 123);
+    Player p;
+    appendScoreBoard(p);
 }
 
 void MainWindow::on_btn_restart_clicked()
@@ -64,7 +78,7 @@ void MainWindow::on_btn_restart_clicked()
     SettingsDialog dialog(this);
     dialog.exec();
 
-    createNewBoard();
+    if (dialog.getSuccess()) createNewBoard();
 }
 
 void MainWindow::tileUpdated(const unsigned int x, unsigned int y) {
@@ -87,6 +101,9 @@ void MainWindow::tileUpdated(const unsigned int x, unsigned int y) {
         btn->setEnabled(true);
     }
 
+    ui->progressbar->setValue(board->getProgress());
+    ui->lcd_flag_count->display(static_cast<int>(board->getFlagCount()));
+
     //qDebug() << QString("Tile at x[%1] y[%2] updated to text [%3]").arg(x).arg(y).arg(btn->text());
 }
 
@@ -105,9 +122,13 @@ void MainWindow::boardUpdated() {
     boardGrid = new QGridLayout(ui->grid);
     boardGrid->setSpacing(0);
     boardGrid->setContentsMargins(0,0,0,0);
+    boardGrid->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
 
     const unsigned int sizeX = Settings::instance().getBoardSizeX();
     const unsigned int sizeY = Settings::instance().getBoardSizeY();
+
+    ui->progressbar->setMaximum(sizeX * sizeY);
+    ui->lcd_flag_count->display(static_cast<int>(board->getFlagCount()));
 
     boardGridTiles.clear();
     boardGridTiles.resize(sizeY, std::vector<TileButton*>(sizeX, nullptr));
@@ -116,8 +137,6 @@ void MainWindow::boardUpdated() {
         for (unsigned int x = 0; x < sizeX; ++x) {
 
             TileButton* btn = new TileButton(this);
-            btn->setFixedSize(32, 32);
-            btn->setToolButtonStyle(Qt::ToolButtonTextOnly);
 
             btn->setProperty("x", x);
             btn->setProperty("y", y);
@@ -135,6 +154,14 @@ void MainWindow::boardUpdated() {
     }
 
     qDebug() << "Finished updating board grid";
+}
+
+void MainWindow::bombHit() {
+    QMessageBox::information(this, "Game Lost!", "Player hit a bomb");
+}
+
+void MainWindow::gameWon() {
+    QMessageBox::information(this, "Game Won!", "Player won the game");
 }
 
 void MainWindow::on_btn_exit_clicked()

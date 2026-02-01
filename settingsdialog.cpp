@@ -22,5 +22,12 @@ void SettingsDialog::on_buttonBox_accepted()
 
     if (!validInput) {
         QMessageBox::warning(this, "Invalid Input", "Please check your input");
+        return;
     }
+
+    success = true;
+}
+
+bool SettingsDialog::getSuccess() const {
+    return this->success;
 }

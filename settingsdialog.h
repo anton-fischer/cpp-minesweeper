@@ -14,9 +14,13 @@ public:
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
 
+    bool getSuccess() const;
+
 private slots:
     void on_buttonBox_accepted();
 
 private:
     Ui::SettingsDialog *ui;
+
+    bool success = false;
 };
