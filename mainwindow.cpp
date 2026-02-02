@@ -43,8 +43,8 @@ void MainWindow::createNewBoard() {
 void MainWindow::handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button) {
     qDebug() << QString("Click registered at: x[%1] y[%2]").arg(x).arg(y);
 
-    if (button == Qt::LeftButton) board->revealTile(x, y);
-    else if (button == Qt::RightButton) board->placeFlag(x, y);
+    if (button == Qt::RightButton || (button == Qt::LeftButton && ui->btn_flag->isChecked())) board->placeFlag(x, y);
+    else if (button == Qt::LeftButton) board->revealTile(x, y);
 }
 
 void MainWindow::appendScoreBoard(Player& player) {
@@ -129,6 +129,7 @@ void MainWindow::boardUpdated() {
 
     ui->progressbar->setMaximum(sizeX * sizeY);
     ui->lcd_flag_count->display(static_cast<int>(board->getFlagCount()));
+    ui->btn_status->setText("😊");
 
     boardGridTiles.clear();
     boardGridTiles.resize(sizeY, std::vector<TileButton*>(sizeX, nullptr));
@@ -153,14 +154,21 @@ void MainWindow::boardUpdated() {
         }
     }
 
+    ui->grid->setDisabled(false);
     qDebug() << "Finished updating board grid";
 }
 
 void MainWindow::bombHit() {
+    ui->grid->setDisabled(true);
+    ui->btn_status->setText("😖");
+
     QMessageBox::information(this, "Game Lost!", "Player hit a bomb");
 }
 
 void MainWindow::gameWon() {
+    ui->grid->setDisabled(true);
+    ui->btn_status->setText("😎");
+
     QMessageBox::information(this, "Game Won!", "Player won the game");
 }
 

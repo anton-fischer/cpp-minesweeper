@@ -106,6 +106,7 @@ void Board::placeFlag(const unsigned int x, const unsigned int y) {
 
     if (progress >= boardSizeX * boardSizeY) {
         handleGameWon(x, y);
+        return;
     }
 
     emit tileUpdated(x, y);

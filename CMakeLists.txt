@@ -31,6 +31,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         player.h player.cpp
         filehandler.h filehandler.cpp
         resources.qrc
+        mainmenu.h mainmenu.cpp mainmenu.ui
+        quest.h quest.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

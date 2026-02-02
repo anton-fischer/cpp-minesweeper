@@ -1,12 +1,15 @@
 #pragma once
 
+#include <QObject>
 #include <string>
 
-class Player
+class Player : public QObject
 {
+    Q_OBJECT
+
 public:
-    Player();
-    Player(const std::string& name);
+    Player(QObject* parent = nullptr);
+    Player(const std::string& name, QObject* parent = nullptr);
 
     std::string getName() const;
     unsigned int getScore() const;

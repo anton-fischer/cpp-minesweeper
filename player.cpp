@@ -2,9 +2,9 @@
 
 unsigned int Player::playerCount = 0;
 
-Player::Player() : Player("Player " + std::to_string(playerCount + 1)) {}
+Player::Player(QObject* parent) : Player("Player " + std::to_string(playerCount + 1), parent) {}
 
-Player::Player(const std::string& name) : name(name) {
+Player::Player(const std::string& name, QObject* parent) : name(name), QObject(parent) {
     ++playerCount;
 }
 

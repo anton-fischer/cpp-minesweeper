@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <QObject>
+
 #include "Tile.h"
 
 class Board : public QObject
