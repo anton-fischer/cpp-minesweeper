@@ -19,6 +19,8 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+    void on_input_difficulty_currentTextChanged(const QString &text);
+
 private:
     Ui::SettingsDialog *ui;
 

@@ -3,6 +3,8 @@
 
 #include <QToolButton>
 
+#include "mainwindow.h"
+#include "settingsdialog.h"
 #include "quest.h"
 
 MainMenu::MainMenu(QWidget *parent)
@@ -51,4 +53,17 @@ void MainMenu::on_btn_save_clicked()
 void MainMenu::on_btn_exit_clicked()
 {
     QCoreApplication::quit();
+}
+
+void MainMenu::on_btn_play_clicked()
+{
+    MainWindow* window = new MainWindow();
+    window->show();
+    this->close();
+}
+
+void MainMenu::on_btn_configure_clicked()
+{
+    SettingsDialog dialog(this);
+    dialog.exec();
 }

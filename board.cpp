@@ -15,8 +15,8 @@ Board::Board(QObject* parent) :
 Board::Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, QObject* parent) :
     boardSizeX(boardSizeX), boardSizeY(boardSizeY), bombCount(bombCount), QObject(parent) {
 
-    assert((boardSizeX >= 3 && boardSizeY >= 3 && boardSizeX <= 10 && boardSizeY <= 10) && "invalid boardSize detected while generating board");
-    assert((bombCount >= 1 && bombCount < boardSizeX * boardSizeY / 2) && "invalid bombCount detected while generating board");
+    //assert((boardSizeX >= 3 && boardSizeY >= 3 && boardSizeX <= 10 && boardSizeY <= 10) && "invalid boardSize detected while generating board");
+    //assert((bombCount >= 1 && bombCount < boardSizeX * boardSizeY / 2) && "invalid bombCount detected while generating board");
 
     // generate empty tiles
     board.resize(boardSizeY);

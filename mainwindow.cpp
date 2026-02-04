@@ -6,6 +6,7 @@
 #include <QSizePolicy>
 
 #include "settingsDialog.h"
+#include "mainmenu.h"
 #include "settings.h"
 #include "player.h"
 
@@ -174,5 +175,7 @@ void MainWindow::gameWon() {
 
 void MainWindow::on_btn_exit_clicked()
 {
-    QCoreApplication::quit();
+    MainMenu* window = new MainMenu();
+    window->show();
+    this->close();
 }

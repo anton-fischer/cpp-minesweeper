@@ -1,5 +1,17 @@
 #pragma once
 
+#include <string>
+
+#define DIFFICULTY_ENUM_GUARD 4
+enum class Difficulty {
+    EASY = 0,
+    MEDIUM = 1,
+    HARD = 2,
+    CUSTOM = 3,
+
+    _END = 4
+};
+
 class Settings
 {
 public:
@@ -16,6 +28,9 @@ public:
     unsigned int getBoardSizeX() const;
     unsigned int getBoardSizeY() const;
     unsigned int getBombCount() const;
+
+    static std::string difficultyToString(const Difficulty& difficulty);
+    static Difficulty  stringToDifficulty(const std::string& string);
 
 private:
     // private constructor

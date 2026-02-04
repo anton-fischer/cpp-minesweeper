@@ -16,11 +16,13 @@ public:
     ~MainMenu();
 
 private slots:
-    void on_pushButton_5_clicked();
-
     void on_btn_save_clicked();
 
     void on_btn_exit_clicked();
+
+    void on_btn_configure_clicked();
+
+    void on_btn_play_clicked();
 
 private:
     Ui::MainMenu *ui;

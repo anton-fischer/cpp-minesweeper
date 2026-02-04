@@ -7,7 +7,7 @@ Quest::Quest(QObject* parent) : type(QuestType::WIN_GAMES), goal(100), reward(10
 }
 
 std::string Quest::generateObjectiveString() const {
-    static_assert(QUEST_TYPE_ENUM_VERSION == 1,  "QuestType enum version mismatch");
+    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END),  "QuestType enum version mismatch");
 
     std::ostringstream returnString;
 

@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#define QUEST_TYPE_ENUM_VERSION 1
+#define QUEST_TYPE_ENUM_GUARD 4
 enum class QuestType {
     PLAY_GAMES = 0,
     WIN_GAMES = 1,
