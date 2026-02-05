@@ -3,6 +3,7 @@
 
 #include <QMessageBox>
 #include <QLayout>
+#include <QScrollBar>
 #include <QSizePolicy>
 
 #include "settingsDialog.h"
@@ -16,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);    
     ui->progressbar->setValue(0);
-    ui->scrollboards_container->setAlignment(Qt::AlignTop);
+    ui->gamelog_container->setAlignment(Qt::AlignTop);
 
     this->setWindowTitle("Minesweeper");
 
@@ -48,30 +49,29 @@ void MainWindow::handleTileClick(const unsigned int x, const unsigned int y, con
     else if (button == Qt::LeftButton) board->revealTile(x, y);
 }
 
-void MainWindow::appendScoreBoard(Player& player) {
+void MainWindow::appendGameLogMessage(const std::string& message, const unsigned int xp) {
     auto* widget = new QWidget(this);
     auto* layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0,0,0,0);
 
-    auto* nameLabel = new QLabel(QString::fromStdString(player.getName()), widget);
-    nameLabel->setMaximumWidth(50);
-    nameLabel->setMaximumHeight(20);
+    auto* messageLabel = new QLabel(QString::fromStdString(message), widget);
+    messageLabel->setMaximumHeight(20);
 
-    auto* scoreDisplay = new QLCDNumber(widget);
-    scoreDisplay->display(static_cast<int>(player.getScore()));
-    scoreDisplay->setDigitCount(5);
-    scoreDisplay->setMaximumHeight(20);
+    auto* xpLabel = new QLabel(QString::fromStdString("+" + std::to_string(xp) + "XP"), widget);
+    QFont f = this->font();
+    f.setPointSize(10);
+    f.setBold(true);
+    xpLabel->setFont(f);
+    xpLabel->setMaximumWidth(50);
+    xpLabel->setMaximumHeight(20);
 
-    layout->addWidget(nameLabel);
-    layout->addWidget(scoreDisplay);
+    layout->addWidget(messageLabel);
+    layout->addWidget(xpLabel);
 
-    ui->scrollboards_container->addWidget(widget);
-}
+    ui->gamelog_container->addWidget(widget);
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    Player p;
-    appendScoreBoard(p);
+    QScrollBar* vbar = ui->scrollArea_gamelog->verticalScrollBar();
+    vbar->setValue(vbar->maximum());
 }
 
 void MainWindow::on_btn_restart_clicked()
@@ -179,3 +179,9 @@ void MainWindow::on_btn_exit_clicked()
     window->show();
     this->close();
 }
+
+void MainWindow::on_btn_help_clicked()
+{
+    appendGameLogMessage("asdasdasd", 10u);
+}
+

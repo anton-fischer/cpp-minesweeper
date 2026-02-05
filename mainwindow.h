@@ -32,9 +32,8 @@ private slots:
     void bombHit();
     void gameWon();
 
-    void on_pushButton_2_clicked();
     void on_btn_restart_clicked();
-
+    void on_btn_help_clicked();
     void on_btn_exit_clicked();
 
 private:
@@ -43,7 +42,7 @@ private:
     void createNewBoard();
 
     void handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button);
-    void appendScoreBoard(Player& player);
+    void appendGameLogMessage(const std::string& message, const unsigned int xp);
 
     Board* board = nullptr;
     QGridLayout* boardGrid = nullptr;

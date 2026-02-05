@@ -19,6 +19,8 @@ class Quest : public QObject
 public:
     explicit Quest(QObject* parent = nullptr);
 
+    void regenerateQuest();
+
     std::string generateObjectiveString() const;
 
     QuestType getType() const;
@@ -27,16 +29,19 @@ public:
     unsigned int getReward() const;
 
     unsigned int getProgress() const;
-    void setProgress(const unsigned int progress);
+    void advanceProgress(const unsigned int newProgress);
+    void setProgress(const unsigned int newProgress);
 
 signals:
     void questCompleted();
 
 private:
-    const QuestType type;
+    void generateQuest();
 
-    const unsigned int goal;
-    const unsigned int reward;
+    QuestType type;
+
+    unsigned int goal;
+    unsigned int reward;
 
     unsigned int progress;
 };

@@ -94,6 +94,13 @@
          </layout>
         </item>
         <item>
+         <widget class="QLabel" name="lbl_currentPlayer">
+          <property name="text">
+           <string>Currently playing as: Guest</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
@@ -153,7 +160,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_4">
+           <widget class="QLabel" name="lbl_currentLevel">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -183,7 +190,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QProgressBar" name="progressBar">
+           <widget class="QProgressBar" name="progressBar_currentXp">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -202,7 +209,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="lbl_nextLevel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
