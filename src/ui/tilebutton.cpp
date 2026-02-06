@@ -1,7 +1,6 @@
-#include "tilebutton.h"
+#include "ui/tilebutton.h"
 
-TileButton::TileButton(QWidget* parent)
-    : QToolButton(parent)
+TileButton::TileButton(QWidget* parent) : QToolButton(parent)
 {
     this->setMinimumSize(32, 32);
     this->setToolButtonStyle(Qt::ToolButtonTextOnly);

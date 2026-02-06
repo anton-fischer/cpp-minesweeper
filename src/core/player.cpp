@@ -1,6 +1,6 @@
-#include "player.h"
+#include "core/player.h"
 
-#include "quest.h"
+#include "core/quest.h"
 
 unsigned int Player::playerCount = 0;
 
@@ -73,3 +73,37 @@ unsigned int Player::getAmountTilesUncovered() const
 unsigned int Player::getPlayerCount() {
     return playerCount;
 }
+
+void Player::incrementAmountEasyGamesWon(const unsigned int amount) {
+    this->amountEasyGamesWon += amount;
+}
+
+void Player::incrementAmountMediumGamesWon(const unsigned int amount) {
+    this->amountMediumGamesWon += amount;
+}
+
+void Player::incrementAmountHardGamesWon(const unsigned int amount) {
+    this->amountHardGamesWon += amount;
+}
+
+void Player::incrementAmountCustomGamesWon(const unsigned int amount) {
+    this->amountCustomGamesWon += amount;
+}
+
+void Player::incrementAmountBombsHit(const unsigned int amount) {
+    this->amountBombsHit += amount;
+}
+
+void Player::incrementAmountFlagsPlaced(const unsigned int amount) {
+    this->amountFlagsPlaced += amount;
+}
+
+void Player::incrementAmountTilesUncovered(const unsigned int amount) {
+    this->amountTilesUncovered += amount;
+}
+
+void Player::decrementAmountFlagsPlaced(const unsigned int amount) {
+    assert(this->amountFlagsPlaced - amount >= 0);
+    this->amountFlagsPlaced -= amount;
+}
+

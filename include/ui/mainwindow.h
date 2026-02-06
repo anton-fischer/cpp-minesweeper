@@ -6,8 +6,8 @@
 #include <QLCDNumber>
 
 #include <vector>
-#include "board.h"
-#include "tilebutton.h"
+#include "core/board.h"
+#include "ui/tilebutton.h"
 
 class Player;
 
@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(Player* player, QWidget* parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -45,8 +45,8 @@ private:
     void appendGameLogMessage(const std::string& message, const unsigned int xp);
 
     Board* board = nullptr;
-    QGridLayout* boardGrid = nullptr;
+    Player* player = nullptr;
 
+    QGridLayout* boardGrid = nullptr;
     std::vector<std::vector<TileButton*>> boardGridTiles;
-    std::vector<QHBoxLayout*> scoreboards;
 };

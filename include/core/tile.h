@@ -4,6 +4,7 @@ class Tile
 {
 public:
     Tile();
+    ~Tile() = default;
 
     bool getIsBomb() const;
     bool getIsFlag() const;

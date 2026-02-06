@@ -1,7 +1,7 @@
-#include "filehandler.h"
+#include "utils/filehandler.h"
 
-#include "board.h"
-#include "player.h"
+#include "core/board.h"
+#include "core/player.h"
 
 FileHandler::FileHandler() {}
 

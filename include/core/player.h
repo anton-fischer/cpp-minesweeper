@@ -13,6 +13,7 @@ class Player : public QObject
 public:
     Player(QObject* parent = nullptr);
     Player(const std::string& name, QObject* parent = nullptr);
+    ~Player() = default;
 
     std::string getName() const;
 
@@ -32,6 +33,16 @@ public:
     unsigned int getAmountBombsHit() const;
     unsigned int getAmountFlagsPlaced() const;
     unsigned int getAmountTilesUncovered() const;
+
+    void incrementAmountEasyGamesWon(const unsigned int amount = 1);
+    void incrementAmountMediumGamesWon(const unsigned int amount = 1);
+    void incrementAmountHardGamesWon(const unsigned int amount = 1);
+    void incrementAmountCustomGamesWon(const unsigned int amount = 1);
+    void incrementAmountBombsHit(const unsigned int amount = 1);
+    void incrementAmountFlagsPlaced(const unsigned int amount = 1);
+    void incrementAmountTilesUncovered(const unsigned int amount = 1);
+
+    void decrementAmountFlagsPlaced(const unsigned int amount = 1);
 
 private:
     const std::string name;

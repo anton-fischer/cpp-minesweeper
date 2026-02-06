@@ -1,17 +1,15 @@
-#include "mainmenu.h"
+#include "ui/mainmenu.h"
 #include "ui_mainmenu.h"
 
 #include <QToolButton>
 #include <memory>
 
-#include "mainwindow.h"
-#include "settingsdialog.h"
-#include "player.h"
-#include "quest.h"
+#include "ui/mainwindow.h"
+#include "ui/settingsdialog.h"
+#include "core/player.h"
+#include "core/quest.h"
 
-MainMenu::MainMenu(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainMenu)
+MainMenu::MainMenu(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainMenu)
 {
     ui->setupUi(this);
 }
@@ -56,6 +54,7 @@ void MainMenu::appendQuest(Quest* quest) {
 }
 
 void MainMenu::loadPlayer(Player* player) {
+    // general
     ui->lbl_currentPlayer->setText(QString::fromStdString("Currently playing as: " + player->getName()));
 
     ui->lbl_currentLevel->setText(QString::fromStdString("Level " + std::to_string(player->getLevel())));
@@ -64,6 +63,16 @@ void MainMenu::loadPlayer(Player* player) {
     ui->progressBar_currentXp->setMaximum(player->getMaxXp());
     ui->progressBar_currentXp->setValue(player->getCurrentXp());
 
+    // stats
+    ui->lcd_easyGamesWon->display(static_cast<int>(player->getAmountEasyGamesWon()));
+    ui->lcd_mediumGamesWon->display(static_cast<int>(player->getAmountMediumGamesWon()));
+    ui->lcd_hardGamesWon->display(static_cast<int>(player->getAmountHardGamesWon()));
+    ui->lcd_customGamesWon->display(static_cast<int>(player->getAmountCustomGamesWon()));
+    ui->lcd_bombsHit->display(static_cast<int>(player->getAmountBombsHit()));
+    ui->lcd_flagsPlaced->display(static_cast<int>(player->getAmountFlagsPlaced()));
+    ui->lcd_tilesUncovered->display(static_cast<int>(player->getAmountTilesUncovered()));
+
+    // quests
     for (auto& quest : player->getQuests()) {
         appendQuest(quest.get());
     }
@@ -92,7 +101,9 @@ void MainMenu::on_btn_exit_clicked()
 
 void MainMenu::on_btn_play_clicked()
 {
-    MainWindow* window = new MainWindow();
+    std::unique_ptr<Player> p = std::make_unique<Player>();
+
+    MainWindow* window = new MainWindow(p.get());
     window->show();
     this->close();
 }

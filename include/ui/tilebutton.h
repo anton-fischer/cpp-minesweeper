@@ -9,6 +9,7 @@ class TileButton : public QToolButton
 
 public:
     explicit TileButton(QWidget* parent = nullptr);
+    ~TileButton() = default;
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;

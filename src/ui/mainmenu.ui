@@ -267,81 +267,81 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-58</y>
              <width>364</width>
              <height>215</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="5" column="0">
-             <widget class="QLabel" name="label_10">
+             <widget class="QLabel" name="lbl_flagsPlaced">
               <property name="text">
                <string>Flags Placed</string>
               </property>
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="QLabel" name="label_9">
+             <widget class="QLabel" name="lbl_bombsHit">
               <property name="text">
                <string>Bombs Hit</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLCDNumber" name="lcdNumber"/>
+             <widget class="QLCDNumber" name="lcd_easyGamesWon"/>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_5">
+             <widget class="QLabel" name="lbl_easyGamesWon">
               <property name="text">
                <string>Easy Games Won</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_2"/>
+             <widget class="QLCDNumber" name="lcd_mediumGamesWon"/>
             </item>
             <item row="4" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_5"/>
+             <widget class="QLCDNumber" name="lcd_bombsHit"/>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_6">
+             <widget class="QLabel" name="lbl_mediumGamesWon">
               <property name="text">
                <string>Medium Games Won</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_3"/>
+             <widget class="QLCDNumber" name="lcd_hardGamesWon"/>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="label_8">
+             <widget class="QLabel" name="lbl_customGamesWon">
               <property name="text">
                <string>Custom Games Won</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_7">
+             <widget class="QLabel" name="lbl_hardGamesWon">
               <property name="text">
                <string>Hard Games Won</string>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_4"/>
+             <widget class="QLCDNumber" name="lcd_customGamesWon"/>
             </item>
             <item row="5" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_6"/>
+             <widget class="QLCDNumber" name="lcd_flagsPlaced"/>
             </item>
             <item row="6" column="0">
-             <widget class="QLabel" name="label_11">
+             <widget class="QLabel" name="lbl_tilesUncovered">
               <property name="text">
                <string>Tiles Uncovered</string>
               </property>
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_7"/>
+             <widget class="QLCDNumber" name="lcd_tilesUncovered"/>
             </item>
            </layout>
           </widget>

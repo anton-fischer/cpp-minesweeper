@@ -18,6 +18,7 @@ class Quest : public QObject
 
 public:
     explicit Quest(QObject* parent = nullptr);
+    ~Quest() = default;
 
     void regenerateQuest();
 

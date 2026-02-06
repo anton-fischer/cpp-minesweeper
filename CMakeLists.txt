@@ -12,27 +12,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        src/core/main.cpp
+        src/ui/mainwindow.cpp
+        include/ui/mainwindow.h
+        src/ui/mainwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(minesweeper
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        board.h board.cpp
-        tile.h tile.cpp
-        settingsDialog.h settingsDialog.cpp settingsDialog.ui
-        settings.h settings.cpp
-        tilebutton.h tilebutton.cpp
-        player.h player.cpp
-        filehandler.h filehandler.cpp
+        include/core/board.h src/core/board.cpp
+        include/core/tile.h src/core/tile.cpp
+        include/ui/settingsDialog.h src/ui/settingsDialog.cpp src/ui/settingsDialog.ui
+        include/core/settings.h src/core/settings.cpp
+        include/ui/tilebutton.h src/ui/tilebutton.cpp
+        include/core/player.h src/core/player.cpp
+        include/utils/filehandler.h src/utils/filehandler.cpp
         resources.qrc
-        mainmenu.h mainmenu.cpp mainmenu.ui
-        quest.h quest.cpp
+        include/ui/mainmenu.h src/ui/mainmenu.cpp src/ui/mainmenu.ui
+        include/core/quest.h src/core/quest.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

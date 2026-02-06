@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "ui/mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include <QMessageBox>
@@ -6,16 +6,13 @@
 #include <QScrollBar>
 #include <QSizePolicy>
 
-#include "settingsDialog.h"
-#include "mainmenu.h"
-#include "settings.h"
-#include "player.h"
+#include "ui/settingsDialog.h"
+#include "ui/mainmenu.h"
+#include "core/settings.h"
+#include "core/player.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-{
-    ui->setupUi(this);    
+MainWindow::MainWindow(Player* player, QWidget* parent) : player(player), QMainWindow(parent), ui(new Ui::MainWindow) {
+    ui->setupUi(this);
     ui->progressbar->setValue(0);
     ui->gamelog_container->setAlignment(Qt::AlignTop);
 

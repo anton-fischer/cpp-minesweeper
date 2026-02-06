@@ -9,6 +9,7 @@ class FileHandler
 {
 public:
     FileHandler();
+    ~FileHandler() = default;
 
     Board createBoardFromFile(std::string filepath);
     Player createPlayerFromFile(std::string filepath);

@@ -1,10 +1,10 @@
-#include "settingsDialog.h"
+#include "ui/settingsDialog.h"
 #include "ui_settingsDialog.h"
 
 #include <QMessageBox>
 #include <QStringList>
 
-#include "settings.h"
+#include "core/settings.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent)
     : QDialog(parent)

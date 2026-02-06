@@ -14,16 +14,15 @@ class MainMenu : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainMenu(QWidget *parent = nullptr);
+    explicit MainMenu(QWidget* parent = nullptr);
     ~MainMenu();
 
 private slots:
+    void on_btn_load_clicked();
     void on_btn_save_clicked();
     void on_btn_exit_clicked();
     void on_btn_configure_clicked();
     void on_btn_play_clicked();
-
-    void on_btn_load_clicked();
 
 private:
     Ui::MainMenu *ui;

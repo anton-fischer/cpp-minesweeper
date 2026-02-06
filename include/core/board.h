@@ -12,10 +12,12 @@ class Board : public QObject
 public:
     explicit Board(QObject* parent = nullptr); // generate board based on current settings
     Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, QObject* parent = nullptr); // generate board based on values
+    ~Board() = default;
 
     void placeFlag(const unsigned int x, const unsigned int y);
-    void revealTile(const unsigned int x, const unsigned int y);
-    void revealAllTiles();
+
+    unsigned int revealTile(const unsigned int x, const unsigned int y);
+    unsigned int revealAllTiles();
 
     std::vector<std::vector<Tile>> getBoard() const;
     Tile getTile(const unsigned int x, const unsigned int y) const;

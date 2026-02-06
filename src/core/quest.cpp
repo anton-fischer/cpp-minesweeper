@@ -1,4 +1,4 @@
-#include "quest.h"
+#include "core/quest.h"
 
 #include <sstream>
 

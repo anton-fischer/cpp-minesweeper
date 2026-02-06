@@ -1,11 +1,11 @@
-#include "board.h"
+#include "core/board.h"
 
 #include <QDebug>
 
 #include <assert.h>
 #include <random>
 #include <algorithm>
-#include "settings.h"
+#include "core/settings.h"
 
 Board::Board(QObject* parent) :
     Board(Settings::instance().getBoardSizeX(), Settings::instance().getBoardSizeY(), Settings::instance().getBombCount(), parent) {
@@ -112,18 +112,20 @@ void Board::placeFlag(const unsigned int x, const unsigned int y) {
     emit tileUpdated(x, y);
 }
 
-void Board::revealTile(const unsigned int x, const unsigned int y) {
+unsigned int Board::revealTile(const unsigned int x, const unsigned int y) {
     if (!isInitialized) initBoard(x, y);
-    if (board[y][x].getIsFlag()) return;
+    if (!board[y][x].getIsCovered() || board[y][x].getIsFlag()) return 0;
 
     if (board[y][x].getIsBomb()) {
         handleBombHit(x, y);
-        return;
+        return 1;
     }
 
     board[y][x].setIsCovered(false);
     progress++;
     emit tileUpdated(x, y);
+
+    unsigned int uncoveredCount = 1; // this field
 
     if (board[y][x].getNumber() == 0) { // in case of 0 also uncover every neighbour tile
         for (int row = -1; row <= 1; ++row) {
@@ -132,7 +134,7 @@ void Board::revealTile(const unsigned int x, const unsigned int y) {
                 const int newY = y + col;
 
                 if (newX >= 0 && newY >= 0 && newX < boardSizeX && newY < boardSizeY && board[newY][newX].getIsCovered()) {
-                    revealTile(newX, newY);
+                    uncoveredCount += revealTile(newX, newY);
                 }
             }
         }
@@ -140,19 +142,25 @@ void Board::revealTile(const unsigned int x, const unsigned int y) {
 
     if (progress >= boardSizeX * boardSizeY) {
         handleGameWon(x, y);
-        return;
     }
+
+    return uncoveredCount;
 }
 
-void Board::revealAllTiles() {
+unsigned int Board::revealAllTiles() {
+    unsigned int uncoveredCount = 0;
+
     for (unsigned int y = 0; y < boardSizeY; ++y) {
         for (unsigned int x = 0; x < boardSizeX; ++x) {
-            //if (board[y][x].getIsFlag()) placeFlag(x, y); // also remove all flags
-
-            board[y][x].setIsCovered(false);
-            emit tileUpdated(x, y);
+            if (board[y][x].getIsCovered()) {
+                board[y][x].setIsCovered(false);
+                emit tileUpdated(x, y);
+                uncoveredCount++;
+            }
         }
     }
+
+    return uncoveredCount;
 }
 
 void Board::handleBombHit(const unsigned int x, const unsigned int y) {
