@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <memory>
+
+#include "core/player.h"
 
 #define DIFFICULTY_ENUM_GUARD 4
 enum class Difficulty {
@@ -29,6 +32,9 @@ public:
     unsigned int getBoardSizeY() const;
     unsigned int getBombCount() const;
 
+    std::unique_ptr<Player>& getCurrentPlayer();
+    void setCurrentPlayer(std::unique_ptr<Player>& player);
+
     static std::string difficultyToString(const Difficulty& difficulty);
     static Difficulty  stringToDifficulty(const std::string& string);
 
@@ -40,6 +46,8 @@ private:
     // forbid copying
     Settings(const Settings&) = delete;
     Settings& operator=(const Settings&) = delete;
+
+    std::unique_ptr<Player> currentPlayer = nullptr;
 
     unsigned int boardSizeX = 10;
     unsigned int boardSizeY = 10;

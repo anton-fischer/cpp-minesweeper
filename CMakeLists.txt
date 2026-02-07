@@ -16,9 +16,9 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(PROJECT_SOURCES
         src/core/main.cpp
-        src/ui/mainwindow.cpp
-        include/ui/mainwindow.h
-        src/ui/mainwindow.ui
+        src/ui/gamewindow.cpp
+        include/ui/gamewindow.h
+        src/ui/gamewindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -33,8 +33,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         include/core/player.h src/core/player.cpp
         include/utils/filehandler.h src/utils/filehandler.cpp
         resources.qrc
-        include/ui/mainmenu.h src/ui/mainmenu.cpp src/ui/mainmenu.ui
+        include/ui/menuwindow.h src/ui/menuwindow.cpp src/ui/menuwindow.ui
         include/core/quest.h src/core/quest.cpp
+        include/ui/enddialog.h src/ui/enddialog.cpp src/ui/enddialog.ui
 
     )
 # Define target properties for Android with Qt 6 as:

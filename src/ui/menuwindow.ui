@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainMenu</class>
- <widget class="QMainWindow" name="MainMenu">
+ <class>MenuWindow</class>
+ <widget class="QMainWindow" name="MenuWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -130,7 +130,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="vbx_statistics">
         <item>
          <widget class="QLabel" name="label_3">
           <property name="font">
@@ -155,7 +155,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <layout class="QHBoxLayout" name="hbx_level">
           <property name="topMargin">
            <number>0</number>
           </property>
@@ -267,7 +267,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-58</y>
+             <y>0</y>
              <width>364</width>
              <height>215</height>
             </rect>

@@ -26,6 +26,15 @@ unsigned int Settings::getBombCount() const {
     return this->bombCount;
 }
 
+std::unique_ptr<Player>& Settings::getCurrentPlayer() {
+    assert(nullptr != currentPlayer);
+    return currentPlayer;
+}
+
+void Settings::setCurrentPlayer(std::unique_ptr<Player>& player) {
+    this->currentPlayer = std::move(player);
+}
+
 std::string Settings::difficultyToString(const Difficulty& difficulty) {
     static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
 

@@ -13,8 +13,13 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("Configure Game");
 
+    connect(this, &QDialog::rejected, this, []() {
+        qDebug() << "Dialog was closed via X";
+        // TODO
+    });
+
     static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
-    ui->input_difficulty->addItems(QStringList{"EASY", "MEDIUM", "HARD", "CUSTOM"});
+    ui->input_difficulty->addItems(QStringList{"EASY", "MEDIUM", "HARD", "CUSTOM"});    
 }
 
 SettingsDialog::~SettingsDialog()

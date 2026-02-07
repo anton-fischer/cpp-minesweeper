@@ -1,25 +1,32 @@
-#include "ui/mainmenu.h"
-#include "ui_mainmenu.h"
+#include "ui/menuwindow.h"
+#include "ui_menuwindow.h"
 
 #include <QToolButton>
 #include <memory>
 
-#include "ui/mainwindow.h"
+#include "ui/gamewindow.h"
 #include "ui/settingsdialog.h"
+#include "core/settings.h"
 #include "core/player.h"
 #include "core/quest.h"
 
-MainMenu::MainMenu(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainMenu)
+MenuWindow::MenuWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MenuWindow)
 {
     ui->setupUi(this);
 }
 
-MainMenu::~MainMenu()
+MenuWindow::~MenuWindow()
 {
     delete ui;
 }
 
-void MainMenu::appendQuest(Quest* quest) {
+void MenuWindow::closeEvent(QCloseEvent* event)
+{
+    qDebug() << "MenuWindow was closed";
+    QMainWindow::closeEvent(event);
+}
+
+void MenuWindow::appendQuest(Quest* quest) {
     auto* widget = new QWidget(this);
     auto* layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0,0,0,0);
@@ -53,7 +60,7 @@ void MainMenu::appendQuest(Quest* quest) {
     ui->quests_container->addWidget(widget);
 }
 
-void MainMenu::loadPlayer(Player* player) {
+void MenuWindow::loadPlayer(Player* player) {
     // general
     ui->lbl_currentPlayer->setText(QString::fromStdString("Currently playing as: " + player->getName()));
 
@@ -78,37 +85,40 @@ void MainMenu::loadPlayer(Player* player) {
     }
 }
 
-void MainMenu::savePlayer(Player* player) {
+void MenuWindow::savePlayer(Player* player) {
 
 }
 
-void MainMenu::on_btn_save_clicked()
+void MenuWindow::on_btn_save_clicked()
 {
     std::unique_ptr<Quest> q = std::make_unique<Quest>();
     appendQuest(q.get());
 }
 
-void MainMenu::on_btn_load_clicked()
+void MenuWindow::on_btn_load_clicked()
 {
     std::unique_ptr<Player> p = std::make_unique<Player>();
-    loadPlayer(p.get());
+    Settings::instance().setCurrentPlayer(p);
+
+    loadPlayer(Settings::instance().getCurrentPlayer().get());
 }
 
-void MainMenu::on_btn_exit_clicked()
+void MenuWindow::on_btn_exit_clicked()
 {
     QCoreApplication::quit();
 }
 
-void MainMenu::on_btn_play_clicked()
+void MenuWindow::on_btn_play_clicked()
 {
     std::unique_ptr<Player> p = std::make_unique<Player>();
+    Settings::instance().setCurrentPlayer(p);
 
-    MainWindow* window = new MainWindow(p.get());
+    GameWindow* window = new GameWindow(Settings::instance().getCurrentPlayer().get());
     window->show();
     this->close();
 }
 
-void MainMenu::on_btn_configure_clicked()
+void MenuWindow::on_btn_configure_clicked()
 {
     SettingsDialog dialog(this);
     dialog.exec();

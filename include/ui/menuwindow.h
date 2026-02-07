@@ -6,16 +6,16 @@ class Player;
 class Quest;
 
 namespace Ui {
-class MainMenu;
+class MenuWindow;
 }
 
-class MainMenu : public QMainWindow
+class MenuWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainMenu(QWidget* parent = nullptr);
-    ~MainMenu();
+    explicit MenuWindow(QWidget* parent = nullptr);
+    ~MenuWindow();
 
 private slots:
     void on_btn_load_clicked();
@@ -25,7 +25,9 @@ private slots:
     void on_btn_play_clicked();
 
 private:
-    Ui::MainMenu *ui;
+    Ui::MenuWindow *ui;
+
+    void closeEvent(QCloseEvent* event) override;
 
     void loadPlayer(Player* player);
     void savePlayer(Player* player);

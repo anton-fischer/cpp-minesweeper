@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>GameWindow</class>
+ <widget class="QMainWindow" name="GameWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -280,23 +280,33 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QHBoxLayout" name="hbx_level">
           <item>
-           <widget class="QLabel" name="label_4">
+           <widget class="QLabel" name="lbl_currentLevel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Level 0</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QProgressBar" name="progressBar">
+           <widget class="QProgressBar" name="progressBar_currentXp">
             <property name="value">
              <number>24</number>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_3">
+           <widget class="QLabel" name="lbl_nextLevel">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Level 1</string>
             </property>
@@ -347,7 +357,7 @@
         <item>
          <layout class="QHBoxLayout" name="hbx_progressbar">
           <item>
-           <widget class="QLabel" name="lbl_static_progress">
+           <widget class="QLabel" name="lbl_progress">
             <property name="maximumSize">
              <size>
               <width>50</width>
@@ -360,7 +370,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QProgressBar" name="progressbar">
+           <widget class="QProgressBar" name="progressBar_progress">
             <property name="value">
              <number>50</number>
             </property>

@@ -13,17 +13,19 @@ class Player;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
-class MainWindow;
+class GameWindow;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class GameWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(Player* player, QWidget* parent = nullptr);
-    ~MainWindow();
+    explicit GameWindow(Player* player, QWidget* parent = nullptr);
+    ~GameWindow();
+
+    void createNewBoard();
 
 private slots:
     void tileUpdated(const unsigned int x, unsigned int y);
@@ -37,9 +39,9 @@ private slots:
     void on_btn_exit_clicked();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::GameWindow *ui;
 
-    void createNewBoard();
+    void closeEvent(QCloseEvent* event) override;
 
     void handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button);
     void appendGameLogMessage(const std::string& message, const unsigned int xp);
