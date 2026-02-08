@@ -45,7 +45,7 @@ void Quest::generateQuest() {
 
     this->progress = 0;
 
-    qDebug() << QString("Generated Quest: type[%1] goal[%2] reward[%3]").arg(type).arg(goal).arg(reward);
+    qDebug() << QString("Generated Quest: type[%1] goal[%2] reward[%3]").arg(questTypeToString(this->type)).arg(goal).arg(reward);
 }
 
 std::string Quest::generateObjectiveString() const {
@@ -89,17 +89,48 @@ unsigned int Quest::getProgress() const {
 void Quest::advanceProgress(const unsigned int newProgress) {
     if (this->progress + newProgress >= goal) {
         this->progress = goal;
-        emit questCompleted();
+        emit questCompleted(this);
+        return;
     }
 
     this->progress += newProgress;
+
+    qDebug() << QString("Advanced Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
 }
 
 void Quest::setProgress(const unsigned int newProgress) {
     if (newProgress >= goal) {
         this->progress = goal;
-        emit questCompleted();
+        emit questCompleted(this);
+        return;
     }
 
     this->progress = newProgress;
+    qDebug() << QString("Advanced Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
+}
+
+std::string Quest::questTypeToString(const QuestType& questType) {
+    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END),  "QuestType enum version mismatch");
+
+    switch(questType) {
+        case (QuestType::PLAY_GAMES):    return "PLAY GAMES";
+        case (QuestType::WIN_GAMES):     return "WIN GAMES";
+        case (QuestType::PLACE_FLAGS):   return "PLACE FLAGS";
+        case (QuestType::UNCOVER_TILES): return "UNCOVER TILES";
+        default: assert(false);
+    }
+
+    return ""; // should not be reached
+}
+
+QuestType Quest::stringToQuestType(const std::string& string) {
+    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END),  "QuestType enum version mismatch");
+
+    if      (string == "PLAY GAMES")    return QuestType::PLAY_GAMES;
+    else if (string == "WIN GAMES")     return QuestType::WIN_GAMES;
+    else if (string == "PLACE FLAGS")   return QuestType::PLACE_FLAGS;
+    else if (string == "UNCOVER TILES") return QuestType::UNCOVER_TILES;
+    else assert(false);
+
+    return QuestType::_END; // should not be reached
 }

@@ -17,19 +17,23 @@ public:
 
     std::string getName() const;
 
-    unsigned int getLevel() const;
-    unsigned int getMaxXp() const;
-    unsigned int getCurrentXp() const;
-
     std::vector<std::unique_ptr<Quest>>& getQuests();
 
     static unsigned int getPlayerCount();
+
+    // xp
+    void incrementXp(const unsigned int amount = 1);
+
+    unsigned int getLevel() const;
+    unsigned int getMaxXp() const;
+    unsigned int getCurrentXp() const;
 
     // stats
     unsigned int getAmountEasyGamesWon() const;
     unsigned int getAmountMediumGamesWon() const;
     unsigned int getAmountHardGamesWon() const;
     unsigned int getAmountCustomGamesWon() const;
+    unsigned int getAmountGamesPlayed() const;
     unsigned int getAmountBombsHit() const;
     unsigned int getAmountFlagsPlaced() const;
     unsigned int getAmountTilesUncovered() const;
@@ -38,11 +42,19 @@ public:
     void incrementAmountMediumGamesWon(const unsigned int amount = 1);
     void incrementAmountHardGamesWon(const unsigned int amount = 1);
     void incrementAmountCustomGamesWon(const unsigned int amount = 1);
+    void incrementAmountGamesPlayed(const unsigned int amount = 1);
     void incrementAmountBombsHit(const unsigned int amount = 1);
     void incrementAmountFlagsPlaced(const unsigned int amount = 1);
     void incrementAmountTilesUncovered(const unsigned int amount = 1);
 
     void decrementAmountFlagsPlaced(const unsigned int amount = 1);
+
+signals:
+    void playerLevelUp();
+    void playerXpChange();
+
+private slots:
+    void questCompleted(Quest* quest);
 
 private:
     const std::string name;
@@ -60,6 +72,7 @@ private:
     unsigned int amountMediumGamesWon = 0;
     unsigned int amountHardGamesWon = 0;
     unsigned int amountCustomGamesWon = 0;
+    unsigned int amountGamesPlayed = 0;
     unsigned int amountBombsHit = 0;
     unsigned int amountFlagsPlaced = 0;
     unsigned int amountTilesUncovered = 0;

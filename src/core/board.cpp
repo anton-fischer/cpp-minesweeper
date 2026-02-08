@@ -91,25 +91,27 @@ void Board::generateTileNumbers() {
     qDebug() << "Successfully generated tile numbers";
 }
 
-void Board::placeFlag(const unsigned int x, const unsigned int y) {
+bool Board::placeFlag(const unsigned int x, const unsigned int y) {
     if (board[y][x].getIsFlag()) {
         board[y][x].setIsFlag(false);
         progress--;
         flagCount++;
+        emit tileUpdated(x, y);
+        return false;
     } else if (flagCount == 0) { // in this case cancel, as no new flag can be placed
-        return;
+        return false;
     } else {
         board[y][x].setIsFlag(true);
         progress++;
         flagCount--;
+        emit tileUpdated(x, y);
+        return true;
     }
 
     if (progress >= boardSizeX * boardSizeY) {
         handleGameWon(x, y);
-        return;
+        return true;
     }
-
-    emit tileUpdated(x, y);
 }
 
 unsigned int Board::revealTile(const unsigned int x, const unsigned int y) {

@@ -2,6 +2,8 @@
 #include "ui_menuwindow.h"
 
 #include <QToolButton>
+#include <QInputDialog>
+#include <QLineEdit>
 #include <memory>
 
 #include "ui/gamewindow.h"
@@ -13,6 +15,10 @@
 MenuWindow::MenuWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MenuWindow)
 {
     ui->setupUi(this);
+
+    if (auto& currentPlayer = Settings::instance().getCurrentPlayer()) {
+        loadPlayer(currentPlayer.get());
+    }
 }
 
 MenuWindow::~MenuWindow()
@@ -109,9 +115,28 @@ void MenuWindow::on_btn_exit_clicked()
 }
 
 void MenuWindow::on_btn_play_clicked()
-{
-    std::unique_ptr<Player> p = std::make_unique<Player>();
-    Settings::instance().setCurrentPlayer(p);
+{    
+    // if no player loaded, create new one
+    if (nullptr == Settings::instance().getCurrentPlayer()) {
+        bool ok;
+        QString playerName = QInputDialog::getText(
+            this,
+            "Create Player",
+            "Please enter a name:",
+            QLineEdit::Normal,
+            "",
+            &ok
+            );
+
+        if (ok && !playerName.isEmpty()) {
+            // user pressed okay and entered something
+            std::unique_ptr<Player> p = std::make_unique<Player>(playerName.toStdString());
+            Settings::instance().setCurrentPlayer(p);
+        } else {
+            // user pressed cancel or invalid input
+            return;
+        }
+    }
 
     GameWindow* window = new GameWindow(Settings::instance().getCurrentPlayer().get());
     window->show();

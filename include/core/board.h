@@ -14,7 +14,7 @@ public:
     Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, QObject* parent = nullptr); // generate board based on values
     ~Board() = default;
 
-    void placeFlag(const unsigned int x, const unsigned int y);
+    bool placeFlag(const unsigned int x, const unsigned int y);
 
     unsigned int revealTile(const unsigned int x, const unsigned int y);
     unsigned int revealAllTiles();

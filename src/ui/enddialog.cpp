@@ -16,6 +16,7 @@ EndDialog::EndDialog(Player* player, bool gameWon, QWidget *parent) : player(pla
         // TODO
     });
 
+    // title
     if (gameWon) {
         this->setWindowTitle("Game Won!");
 
@@ -29,6 +30,13 @@ EndDialog::EndDialog(Player* player, bool gameWon, QWidget *parent) : player(pla
         ui->lbl_subtitle->setText("A bomb got hit!");
     }
 
+    // level progress
+    ui->lbl_currentLevel->setText(QString("Level %1").arg(player->getLevel()));
+    ui->lbl_nextLevel->setText(QString("Level %1").arg(player->getLevel() + 1));
+    ui->progressBar_currentXp->setMaximum(player->getMaxXp());
+    ui->progressBar_currentXp->setValue(player->getCurrentXp());
+
+    // quests
     for (auto& quest : player->getQuests()) {
         appendQuest(quest.get());
     }

@@ -296,7 +296,7 @@
           <item>
            <widget class="QProgressBar" name="progressBar_currentXp">
             <property name="value">
-             <number>24</number>
+             <number>0</number>
             </property>
            </widget>
           </item>
@@ -372,7 +372,7 @@
           <item>
            <widget class="QProgressBar" name="progressBar_progress">
             <property name="value">
-             <number>50</number>
+             <number>0</number>
             </property>
            </widget>
           </item>

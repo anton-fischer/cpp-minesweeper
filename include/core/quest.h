@@ -33,8 +33,11 @@ public:
     void advanceProgress(const unsigned int newProgress);
     void setProgress(const unsigned int newProgress);
 
+    static std::string questTypeToString(const QuestType& questType);
+    static QuestType   stringToQuestType(const std::string& string);
+
 signals:
-    void questCompleted();
+    void questCompleted(Quest* quest);
 
 private:
     void generateQuest();

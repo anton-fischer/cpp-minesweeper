@@ -26,13 +26,21 @@ unsigned int Settings::getBombCount() const {
     return this->bombCount;
 }
 
+Difficulty Settings::getDifficulty() const {
+    return this->difficulty;
+}
+
 std::unique_ptr<Player>& Settings::getCurrentPlayer() {
-    assert(nullptr != currentPlayer);
+    //assert(nullptr != currentPlayer);
     return currentPlayer;
 }
 
 void Settings::setCurrentPlayer(std::unique_ptr<Player>& player) {
     this->currentPlayer = std::move(player);
+}
+
+void Settings::setDifficulty(Difficulty difficulty) {
+    this->difficulty = difficulty;
 }
 
 std::string Settings::difficultyToString(const Difficulty& difficulty) {
@@ -58,5 +66,20 @@ Difficulty Settings::stringToDifficulty(const std::string& string) {
     else if (string == "CUSTOM") return Difficulty::CUSTOM;
     else assert(false);
 
-    return Difficulty::CUSTOM; // should not be reached
+    return Difficulty::_END; // should not be reached
 }
+
+float Settings::getDifficultyXpMultiplier(const Difficulty& difficulty) {
+    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
+
+    switch(difficulty) {
+        case (Difficulty::EASY):   return 1;
+        case (Difficulty::MEDIUM): return 1.5;
+        case (Difficulty::HARD):   return 2;
+        case (Difficulty::CUSTOM): return 1;
+        default: assert(false);
+    }
+
+    return 0; // should not be reached
+}
+

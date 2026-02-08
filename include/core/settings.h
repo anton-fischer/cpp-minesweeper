@@ -28,15 +28,19 @@ public:
     // nothing is changed when false returned
     bool setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount);
 
+    std::unique_ptr<Player>& getCurrentPlayer();
+    void setCurrentPlayer(std::unique_ptr<Player>& player);
+
+    Difficulty getDifficulty() const;
+    void setDifficulty(Difficulty difficulty);
+
     unsigned int getBoardSizeX() const;
     unsigned int getBoardSizeY() const;
     unsigned int getBombCount() const;
 
-    std::unique_ptr<Player>& getCurrentPlayer();
-    void setCurrentPlayer(std::unique_ptr<Player>& player);
-
     static std::string difficultyToString(const Difficulty& difficulty);
     static Difficulty  stringToDifficulty(const std::string& string);
+    static float       getDifficultyXpMultiplier(const Difficulty& difficulty);
 
 private:
     // private constructor
@@ -48,6 +52,8 @@ private:
     Settings& operator=(const Settings&) = delete;
 
     std::unique_ptr<Player> currentPlayer = nullptr;
+
+    Difficulty difficulty = Difficulty::CUSTOM;
 
     unsigned int boardSizeX = 10;
     unsigned int boardSizeY = 10;

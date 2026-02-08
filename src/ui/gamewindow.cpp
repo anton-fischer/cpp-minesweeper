@@ -19,6 +19,19 @@ GameWindow::GameWindow(Player* player, QWidget* parent) : player(player), QMainW
 
     this->setWindowTitle("Minesweeper");
 
+    connect(player, &Player::playerLevelUp, this, &GameWindow::playerLevelUp);
+    connect(player, &Player::playerXpChange, this, &GameWindow::playerXpChange);
+
+    for (auto& quest : player->getQuests()) {
+        connect(quest.get(), &Quest::questCompleted, this, &GameWindow::questCompleted);
+    }
+
+    // level progress
+    ui->lbl_currentLevel->setText(QString("Level %1").arg(player->getLevel()));
+    ui->lbl_nextLevel->setText(QString("Level %1").arg(player->getLevel() + 1));
+    ui->progressBar_currentXp->setMaximum(player->getMaxXp());
+    ui->progressBar_currentXp->setValue(player->getCurrentXp());
+
     createNewBoard();
 }
 
@@ -54,11 +67,33 @@ void GameWindow::createNewBoard() {
 void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button) {
     qDebug() << QString("Click registered at: x[%1] y[%2]").arg(x).arg(y);
 
-    if (button == Qt::RightButton || (button == Qt::LeftButton && ui->btn_flag->isChecked())) board->placeFlag(x, y);
-    else if (button == Qt::LeftButton) board->revealTile(x, y);
+    // place flag
+    if (button == Qt::RightButton || (button == Qt::LeftButton && ui->btn_flag->isChecked())) {
+        bool flagPlaced = board->placeFlag(x, y);
+        if (flagPlaced) {
+            player->incrementAmountFlagsPlaced(1);
+
+            // xp and log message
+            unsigned int xpGain = 10 * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
+            player->incrementXp(xpGain);
+            appendGameLogMessage("Flag placed", xpGain);
+        }
+
+        // TODO handle case when flag removed
+    }
+    // uncover tile
+    else if (button == Qt::LeftButton) {
+        unsigned amountRevealed = board->revealTile(x, y);
+        player->incrementAmountTilesUncovered(amountRevealed);
+
+        // xp and log message
+        unsigned int xpGain = amountRevealed * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
+        player->incrementXp(xpGain);
+        appendGameLogMessage("Tiles uncovered", xpGain);
+    }
 }
 
-void GameWindow::appendGameLogMessage(const std::string& message, const unsigned int xp) {
+void GameWindow::appendGameLogMessage(const std::string& message, const unsigned int xp, const bool bold) {
     auto* widget = new QWidget(this);
     auto* layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0,0,0,0);
@@ -66,16 +101,26 @@ void GameWindow::appendGameLogMessage(const std::string& message, const unsigned
     auto* messageLabel = new QLabel(QString::fromStdString(message), widget);
     messageLabel->setMaximumHeight(20);
 
-    auto* xpLabel = new QLabel(QString::fromStdString("+" + std::to_string(xp) + "XP"), widget);
-    QFont f = this->font();
-    f.setPointSize(10);
-    f.setBold(true);
-    xpLabel->setFont(f);
-    xpLabel->setMaximumWidth(50);
-    xpLabel->setMaximumHeight(20);
+    if (bold) {
+        QFont f = this->font();
+        f.setPointSize(10);
+        f.setBold(true);
+        messageLabel->setFont(f);
+    }
 
     layout->addWidget(messageLabel);
-    layout->addWidget(xpLabel);
+
+    if (xp != 0u) {
+        auto* xpLabel = new QLabel(QString::fromStdString("+" + std::to_string(xp) + "XP"), widget);
+        QFont f = this->font();
+        f.setPointSize(10);
+        f.setBold(true);
+        xpLabel->setFont(f);
+        xpLabel->setMaximumWidth(50);
+        xpLabel->setMaximumHeight(20);
+
+        layout->addWidget(xpLabel);
+    }
 
     ui->gamelog_container->addWidget(widget);
 
@@ -172,7 +217,14 @@ void GameWindow::bombHit() {
     ui->grid->setDisabled(true);
     ui->btn_status->setText("😖");
 
-    assert(nullptr != player);
+    player->incrementAmountBombsHit(1);
+    player->incrementAmountGamesPlayed(1);
+
+    // xp and log message
+    unsigned int xpGain = 50 * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
+    player->incrementXp(xpGain);
+    appendGameLogMessage("GAME OVER: Bomb hit!", xpGain, true);
+
     EndDialog dialog(player, false, this);
     dialog.exec();
 
@@ -183,11 +235,45 @@ void GameWindow::gameWon() {
     ui->grid->setDisabled(true);
     ui->btn_status->setText("😎");
 
-    assert(nullptr != player);
+    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
+
+    switch(Settings::instance().getDifficulty()) {
+        case (Difficulty::EASY):   player->incrementAmountEasyGamesWon(1); break;
+        case (Difficulty::MEDIUM): player->incrementAmountMediumGamesWon(1); break;
+        case (Difficulty::HARD):   player->incrementAmountHardGamesWon(1); break;
+        case (Difficulty::CUSTOM): player->incrementAmountCustomGamesWon(1); break;
+        default: assert(false);
+    }
+
+    player->incrementAmountGamesPlayed(1);
+
+    // xp and log message
+    unsigned int xpGain = 200 * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
+    player->incrementXp(xpGain);
+    appendGameLogMessage("GAME OVER: You win!", xpGain, true);
+
     EndDialog dialog(player, true, this);
     dialog.exec();
 
     //QMessageBox::information(this, "Game Won!", "Player won the game");
+}
+
+void GameWindow::playerLevelUp() {
+    appendGameLogMessage("LEVEL UP: " + std::to_string(player->getLevel() - 1) + "->" + std::to_string(player->getLevel()), 0, true);
+    appendGameLogMessage("> XP for next level up: " + std::to_string(player->getMaxXp()) + "XP");
+
+    ui->lbl_currentLevel->setText(QString("Level %1").arg(player->getLevel()));
+    ui->lbl_nextLevel->setText(QString("Level %1").arg(player->getLevel() + 1));
+    ui->progressBar_currentXp->setMaximum(player->getMaxXp());
+}
+
+void GameWindow::playerXpChange() {
+    ui->progressBar_currentXp->setValue(player->getCurrentXp());
+}
+
+void GameWindow::questCompleted(Quest* quest) {
+    appendGameLogMessage("QUEST COMPLETED", quest->getReward(), true);
+    appendGameLogMessage(">" + quest->generateObjectiveString());
 }
 
 void GameWindow::on_btn_exit_clicked()

@@ -10,6 +10,7 @@
 #include "ui/tilebutton.h"
 
 class Player;
+class Quest;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -34,6 +35,11 @@ private slots:
     void bombHit();
     void gameWon();
 
+    void questCompleted(Quest* quest);
+
+    void playerLevelUp();
+    void playerXpChange();
+
     void on_btn_restart_clicked();
     void on_btn_help_clicked();
     void on_btn_exit_clicked();
@@ -44,7 +50,7 @@ private:
     void closeEvent(QCloseEvent* event) override;
 
     void handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button);
-    void appendGameLogMessage(const std::string& message, const unsigned int xp);
+    void appendGameLogMessage(const std::string& message, const unsigned int xp = 0, const bool bold = false);
 
     Board* board = nullptr;
     Player* player = nullptr;
