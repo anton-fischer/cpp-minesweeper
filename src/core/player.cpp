@@ -1,5 +1,8 @@
 #include "core/player.h"
 
+#include <QFile>
+#include <QDebug>
+
 #include "core/quest.h"
 
 unsigned int Player::playerCount = 0;
@@ -20,7 +23,7 @@ Player::Player(const std::string& name, QObject* parent) : name(name), QObject(p
 }
 
 void Player::questCompleted(Quest* quest) {
-    incrementXp(quest->getGoal());
+    //incrementXp(quest->getGoal()); gets already added in gamewindow
 }
 
 std::string Player::getName() const {
@@ -191,3 +194,64 @@ void Player::decrementAmountFlagsPlaced(const unsigned int amount) {
     // TODO implement quest logic for this case
 }
 
+std::unique_ptr<Player> Player::fromJson(const nlohmann::json& j, QObject* parent) {
+    std::unique_ptr<Player> p = std::make_unique<Player>();
+
+    // general
+    assert(j.at("saveVersion") == SAVE_FILE_VERSION && "save file version missmatch detected while loading player");
+    p->name = j.at("name");
+
+    // progress
+    p->level     = j.at("progress").at("level");
+    p->maxXp     = j.at("progress").at("maxXp");
+    p->currentXp = j.at("progress").at("currentXp");
+
+    // stats
+    p->amountEasyGamesWon   = j.at("stats").at("amountEasyGamesWon");
+    p->amountMediumGamesWon = j.at("stats").at("amountMediumGamesWon");
+    p->amountHardGamesWon   = j.at("stats").at("amountHardGamesWon");
+    p->amountCustomGamesWon = j.at("stats").at("amountCustomGamesWon");
+    p->amountGamesPlayed    = j.at("stats").at("amountGamesPlayed");
+    p->amountBombsHit       = j.at("stats").at("amountBombsHit");
+    p->amountFlagsPlaced    = j.at("stats").at("amountFlagsPlaced");
+    p->amountTilesUncovered = j.at("stats").at("amountTilesUncovered");
+
+    // quests
+    p->quests.clear();
+    for (auto& jq : j.at("quests")) {
+        auto quest = Quest::fromJson(jq);
+        p->quests.push_back(std::move(quest));
+    }
+
+    return p;
+}
+
+nlohmann::json Player::toJson() const {
+    nlohmann::json j;
+    // general
+    j["saveVersion"] = SAVE_FILE_VERSION;
+    j["name"]        = this->name;
+
+    // progress
+    j["progress"]["level"]     = this->level;
+    j["progress"]["maxXp"]     = this->maxXp;
+    j["progress"]["currentXp"] = this->currentXp;
+
+    // stats
+    j["stats"]["amountEasyGamesWon"]   = this->amountEasyGamesWon;
+    j["stats"]["amountMediumGamesWon"] = this->amountMediumGamesWon;
+    j["stats"]["amountHardGamesWon"]   = this->amountHardGamesWon;
+    j["stats"]["amountCustomGamesWon"] = this->amountCustomGamesWon;
+    j["stats"]["amountGamesPlayed"]    = this->amountGamesPlayed;
+    j["stats"]["amountBombsHit"]       = this->amountBombsHit;
+    j["stats"]["amountFlagsPlaced"]    = this->amountFlagsPlaced;
+    j["stats"]["amountTilesUncovered"] = this->amountTilesUncovered;
+
+    // quests
+    for (auto& quest : this->quests) {
+        auto jq = quest->toJson();
+        j["quests"].push_back(std::move(jq));
+    }
+
+    return j;
+}

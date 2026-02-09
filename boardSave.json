@@ -1,0 +1,43 @@
+{
+    "saveVersion": 1,
+
+    "name" : "asd",
+    
+    "progress": {
+        "level": 0,
+        "maxXp": 100,
+        "currentXp": 40
+    },
+
+    "stats" : {
+        "amountEasyGamesWon" : 0,
+        "amountMediumGamesWon" : 0,
+        "amountHardGamesWon" : 0,
+        "amountCustomGamesWon" : 0,
+        "amountGamesPlayed" : 0,
+        "amountBombsHit" : 0,
+        "amountFlagsPlaced" : 0,
+        "amountTilesUncovered" : 0
+    },
+
+    "quests" : [
+        {
+            "type" : "PLAY_GAMES",
+            "goal" : 1,
+            "reward" : 1,
+            "progress" : 1
+        },
+        {
+            "type" : "PLAY_GAMES",
+            "goal" : 1,
+            "reward" : 1,
+            "progress" : 1
+        },
+        {
+            "type" : "PLAY_GAMES",
+            "goal" : 1,
+            "reward" : 1,
+            "progress" : 1
+        }
+    ]
+}

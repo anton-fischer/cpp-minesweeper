@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include "utils/json.hpp"
 
 #define QUEST_TYPE_ENUM_GUARD 4
 enum class QuestType {
@@ -36,6 +37,10 @@ public:
     static std::string questTypeToString(const QuestType& questType);
     static QuestType   stringToQuestType(const std::string& string);
 
+    // persistor
+    static std::unique_ptr<Quest> fromJson(const nlohmann::json& j, QObject* parent = nullptr);
+    nlohmann::json toJson() const;
+
 signals:
     void questCompleted(Quest* quest);
 
@@ -46,6 +51,7 @@ private:
 
     unsigned int goal;
     unsigned int reward;
-
     unsigned int progress;
+
+    bool completed = false;
 };

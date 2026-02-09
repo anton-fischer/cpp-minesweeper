@@ -72,11 +72,7 @@ void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, con
         bool flagPlaced = board->placeFlag(x, y);
         if (flagPlaced) {
             player->incrementAmountFlagsPlaced(1);
-
-            // xp and log message
-            unsigned int xpGain = 10 * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
-            player->incrementXp(xpGain);
-            appendGameLogMessage("Flag placed", xpGain);
+            appendGameLogMessageWithXp("Flag placed", 10);
         }
 
         // TODO handle case when flag removed
@@ -85,12 +81,14 @@ void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, con
     else if (button == Qt::LeftButton) {
         unsigned amountRevealed = board->revealTile(x, y);
         player->incrementAmountTilesUncovered(amountRevealed);
-
-        // xp and log message
-        unsigned int xpGain = amountRevealed * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
-        player->incrementXp(xpGain);
-        appendGameLogMessage("Tiles uncovered", xpGain);
+        appendGameLogMessageWithXp("Tiles uncovered", amountRevealed);
     }
+}
+
+void GameWindow::appendGameLogMessageWithXp(const std::string& message, const unsigned int xp, const bool bold) {
+    unsigned int xpGain = xp * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
+    player->incrementXp(xpGain);
+    appendGameLogMessage(message, xpGain, bold);
 }
 
 void GameWindow::appendGameLogMessage(const std::string& message, const unsigned int xp, const bool bold) {
@@ -221,9 +219,7 @@ void GameWindow::bombHit() {
     player->incrementAmountGamesPlayed(1);
 
     // xp and log message
-    unsigned int xpGain = 50 * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
-    player->incrementXp(xpGain);
-    appendGameLogMessage("GAME OVER: Bomb hit!", xpGain, true);
+    appendGameLogMessageWithXp("GAME OVER: Bomb hit!", 50, true);
 
     EndDialog dialog(player, false, this);
     dialog.exec();
@@ -248,9 +244,7 @@ void GameWindow::gameWon() {
     player->incrementAmountGamesPlayed(1);
 
     // xp and log message
-    unsigned int xpGain = 200 * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
-    player->incrementXp(xpGain);
-    appendGameLogMessage("GAME OVER: You win!", xpGain, true);
+    appendGameLogMessageWithXp("GAME OVER: You win!", 200, true);
 
     EndDialog dialog(player, true, this);
     dialog.exec();
@@ -272,7 +266,7 @@ void GameWindow::playerXpChange() {
 }
 
 void GameWindow::questCompleted(Quest* quest) {
-    appendGameLogMessage("QUEST COMPLETED", quest->getReward(), true);
+    appendGameLogMessageWithXp("QUEST COMPLETED", quest->getReward(), true);
     appendGameLogMessage(">" + quest->generateObjectiveString());
 }
 

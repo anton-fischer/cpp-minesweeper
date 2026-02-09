@@ -11,6 +11,7 @@
 #include "core/settings.h"
 #include "core/player.h"
 #include "core/quest.h"
+#include "utils/filehandler.h"
 
 MenuWindow::MenuWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MenuWindow)
 {
@@ -18,6 +19,8 @@ MenuWindow::MenuWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MenuWi
 
     if (auto& currentPlayer = Settings::instance().getCurrentPlayer()) {
         loadPlayer(currentPlayer.get());
+    } else {
+        ui->btn_save->setDisabled(true);
     }
 }
 
@@ -66,6 +69,20 @@ void MenuWindow::appendQuest(Quest* quest) {
     ui->quests_container->addWidget(widget);
 }
 
+void MenuWindow::clearQuests() {
+    QLayout* layout = ui->quests_container;
+
+    while (layout->count() > 0) {
+        QLayoutItem* item = layout->takeAt(0);
+
+        if (item->widget()) {
+            delete item->widget(); // delete widget
+        }
+
+        delete item; // delete layout
+    }
+}
+
 void MenuWindow::loadPlayer(Player* player) {
     // general
     ui->lbl_currentPlayer->setText(QString::fromStdString("Currently playing as: " + player->getName()));
@@ -86,27 +103,37 @@ void MenuWindow::loadPlayer(Player* player) {
     ui->lcd_tilesUncovered->display(static_cast<int>(player->getAmountTilesUncovered()));
 
     // quests
+    clearQuests();
     for (auto& quest : player->getQuests()) {
         appendQuest(quest.get());
     }
+
+    ui->btn_save->setDisabled(false);
 }
 
-void MenuWindow::savePlayer(Player* player) {
+void MenuWindow::loadPlayerFromFile() {
+    FileHandler handler;
+    auto player = handler.createPlayerFromFile();
 
+    Settings::instance().setCurrentPlayer(player);
+
+    loadPlayer(Settings::instance().getCurrentPlayer().get());
+}
+
+void MenuWindow::savePlayerAsFile(Player* player) {
+    FileHandler handler;
+    handler.savePlayerAsFile(player);
 }
 
 void MenuWindow::on_btn_save_clicked()
 {
-    std::unique_ptr<Quest> q = std::make_unique<Quest>();
-    appendQuest(q.get());
+    assert(nullptr != Settings::instance().getCurrentPlayer());
+    savePlayerAsFile(Settings::instance().getCurrentPlayer().get());
 }
 
 void MenuWindow::on_btn_load_clicked()
 {
-    std::unique_ptr<Player> p = std::make_unique<Player>();
-    Settings::instance().setCurrentPlayer(p);
-
-    loadPlayer(Settings::instance().getCurrentPlayer().get());
+    loadPlayerFromFile();
 }
 
 void MenuWindow::on_btn_exit_clicked()

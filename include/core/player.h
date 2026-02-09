@@ -5,6 +5,9 @@
 #include <memory>
 
 #include "quest.h"
+#include "utils/json.hpp"
+
+#define SAVE_FILE_VERSION 1
 
 class Player : public QObject
 {
@@ -16,7 +19,6 @@ public:
     ~Player() = default;
 
     std::string getName() const;
-
     std::vector<std::unique_ptr<Quest>>& getQuests();
 
     static unsigned int getPlayerCount();
@@ -49,6 +51,10 @@ public:
 
     void decrementAmountFlagsPlaced(const unsigned int amount = 1);
 
+    // persistor
+    static std::unique_ptr<Player> fromJson(const nlohmann::json& j, QObject* parent = nullptr);
+    nlohmann::json toJson() const;
+
 signals:
     void playerLevelUp();
     void playerXpChange();
@@ -57,7 +63,7 @@ private slots:
     void questCompleted(Quest* quest);
 
 private:
-    const std::string name;
+    std::string name;
 
     unsigned int level = 0;
     unsigned int maxXp = 100;

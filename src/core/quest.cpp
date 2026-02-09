@@ -44,6 +44,7 @@ void Quest::generateQuest() {
     }
 
     this->progress = 0;
+    this->completed = false;
 
     qDebug() << QString("Generated Quest: type[%1] goal[%2] reward[%3]").arg(questTypeToString(this->type)).arg(goal).arg(reward);
 }
@@ -87,9 +88,12 @@ unsigned int Quest::getProgress() const {
 }
 
 void Quest::advanceProgress(const unsigned int newProgress) {
+    if (completed) return;
+
     if (this->progress + newProgress >= goal) {
         this->progress = goal;
         emit questCompleted(this);
+        completed = true;
         return;
     }
 
@@ -99,9 +103,12 @@ void Quest::advanceProgress(const unsigned int newProgress) {
 }
 
 void Quest::setProgress(const unsigned int newProgress) {
+    if (completed) return;
+
     if (newProgress >= goal) {
         this->progress = goal;
         emit questCompleted(this);
+        completed = true;
         return;
     }
 
@@ -133,4 +140,28 @@ QuestType Quest::stringToQuestType(const std::string& string) {
     else assert(false);
 
     return QuestType::_END; // should not be reached
+}
+
+std::unique_ptr<Quest> Quest::fromJson(const nlohmann::json& j, QObject* parent) {
+    std::unique_ptr<Quest> q = std::make_unique<Quest>();
+
+    // general
+    q->type     = stringToQuestType(j.at("type"));
+    q->goal     = j.at("goal");
+    q->reward   = j.at("reward");
+    q->progress = j.at("progress");
+
+    return q;
+}
+
+nlohmann::json Quest::toJson() const {
+    nlohmann::json j;
+
+    // general
+    j["type"]     = questTypeToString(type);
+    j["goal"]     = goal;
+    j["reward"]   = reward;
+    j["progress"] = progress;
+
+    return j;
 }

@@ -200,3 +200,14 @@ unsigned int Board::getProgress() const {
 unsigned int Board::getFlagCount() const {
     return this->flagCount;
 }
+
+std::unique_ptr<Board> Board::fromJson(const nlohmann::json& j, QObject* parent) {
+    return nullptr;
+}
+
+nlohmann::json Board::toJson() const {
+    nlohmann::json j;
+    // general
+
+    return j;
+}

@@ -30,7 +30,10 @@ private:
     void closeEvent(QCloseEvent* event) override;
 
     void loadPlayer(Player* player);
-    void savePlayer(Player* player);
+
+    void loadPlayerFromFile();
+    void savePlayerAsFile(Player* player);
 
     void appendQuest(Quest* quest);
+    void clearQuests();
 };

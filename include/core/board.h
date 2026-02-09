@@ -4,6 +4,9 @@
 #include <QObject>
 
 #include "Tile.h"
+#include "utils/json.hpp"
+
+#define SAVE_FILE_VERSION 1
 
 class Board : public QObject
 {
@@ -24,6 +27,10 @@ public:
 
     unsigned int getProgress() const;
     unsigned int getFlagCount() const;
+
+    // persistor
+    static std::unique_ptr<Board> fromJson(const nlohmann::json& j, QObject* parent = nullptr);
+    nlohmann::json toJson() const;
 
 signals:
     void tileUpdated(const unsigned int x, const unsigned int y);
