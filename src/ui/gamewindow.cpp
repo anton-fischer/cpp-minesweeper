@@ -12,15 +12,18 @@
 #include "core/settings.h"
 #include "core/player.h"
 
-GameWindow::GameWindow(Player* player, QWidget* parent) : player(player), QMainWindow(parent), ui(new Ui::GameWindow) {
+#include <utils/filehandler.h>
+
+GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWindow) {
     ui->setupUi(this);
     ui->progressBar_progress->setValue(0);
     ui->gamelog_container->setAlignment(Qt::AlignTop);
 
     this->setWindowTitle("Minesweeper");
 
-    connect(player, &Player::playerLevelUp, this, &GameWindow::playerLevelUp);
-    connect(player, &Player::playerXpChange, this, &GameWindow::playerXpChange);
+    auto& player = Settings::instance().getCurrentPlayer();
+    connect(player.get(), &Player::playerLevelUp, this, &GameWindow::playerLevelUp);
+    connect(player.get(), &Player::playerXpChange, this, &GameWindow::playerXpChange);
 
     for (auto& quest : player->getQuests()) {
         connect(quest.get(), &Quest::questCompleted, this, &GameWindow::questCompleted);
@@ -51,9 +54,9 @@ void GameWindow::closeEvent(QCloseEvent* event)
     QMainWindow::closeEvent(event);
 }
 
-void GameWindow::createNewBoard() {
-    delete board;
-    board = new Board(this);
+void GameWindow::createNewBoard(Board* newBoard) {
+    if (nullptr == newBoard) board = new Board(this);
+    else board = newBoard;
 
     connect(board, &Board::boardUpdated, this, &GameWindow::boardUpdated);
     connect(board, &Board::tileUpdated, this, &GameWindow::tileUpdated);
@@ -62,10 +65,13 @@ void GameWindow::createNewBoard() {
     connect(board, &Board::gameWon, this, &GameWindow::gameWon);
 
     boardUpdated();
+
+    this->resize(this->sizeHint()); // resize in case board size changed
 }
 
 void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button) {
     qDebug() << QString("Click registered at: x[%1] y[%2]").arg(x).arg(y);
+    auto& player = Settings::instance().getCurrentPlayer();
 
     // place flag
     if (button == Qt::RightButton || (button == Qt::LeftButton && ui->btn_flag->isChecked())) {
@@ -86,8 +92,8 @@ void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, con
 }
 
 void GameWindow::appendGameLogMessageWithXp(const std::string& message, const unsigned int xp, const bool bold) {
-    unsigned int xpGain = xp * Settings::getDifficultyXpMultiplier(Settings::instance().getDifficulty());
-    player->incrementXp(xpGain);
+    unsigned int xpGain = xp * Settings::getDifficultyXpMultiplier(board->getDifficulty());
+    Settings::instance().getCurrentPlayer()->incrementXp(xpGain);
     appendGameLogMessage(message, xpGain, bold);
 }
 
@@ -177,8 +183,8 @@ void GameWindow::boardUpdated() {
     boardGrid->setContentsMargins(0,0,0,0);
     boardGrid->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
 
-    const unsigned int sizeX = Settings::instance().getBoardSizeX();
-    const unsigned int sizeY = Settings::instance().getBoardSizeY();
+    const unsigned int sizeX = board->getBoardSizeX();
+    const unsigned int sizeY = board->getBoardSizeY();
 
     ui->progressBar_progress->setMaximum(sizeX * sizeY);
     ui->lcd_flag_count->display(static_cast<int>(board->getFlagCount()));
@@ -212,6 +218,8 @@ void GameWindow::boardUpdated() {
 }
 
 void GameWindow::bombHit() {
+    auto& player = Settings::instance().getCurrentPlayer();
+
     ui->grid->setDisabled(true);
     ui->btn_status->setText("😖");
 
@@ -221,19 +229,21 @@ void GameWindow::bombHit() {
     // xp and log message
     appendGameLogMessageWithXp("GAME OVER: Bomb hit!", 50, true);
 
-    EndDialog dialog(player, false, this);
+    EndDialog dialog(player.get(), false, this);
     dialog.exec();
 
     //QMessageBox::information(this, "Game Lost!", "Player hit a bomb");
 }
 
 void GameWindow::gameWon() {
+    auto& player = Settings::instance().getCurrentPlayer();
+
     ui->grid->setDisabled(true);
     ui->btn_status->setText("😎");
 
     static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
 
-    switch(Settings::instance().getDifficulty()) {
+    switch(board->getDifficulty()) {
         case (Difficulty::EASY):   player->incrementAmountEasyGamesWon(1); break;
         case (Difficulty::MEDIUM): player->incrementAmountMediumGamesWon(1); break;
         case (Difficulty::HARD):   player->incrementAmountHardGamesWon(1); break;
@@ -246,13 +256,15 @@ void GameWindow::gameWon() {
     // xp and log message
     appendGameLogMessageWithXp("GAME OVER: You win!", 200, true);
 
-    EndDialog dialog(player, true, this);
+    EndDialog dialog(player.get(), true, this);
     dialog.exec();
 
     //QMessageBox::information(this, "Game Won!", "Player won the game");
 }
 
 void GameWindow::playerLevelUp() {
+    auto& player = Settings::instance().getCurrentPlayer();
+
     appendGameLogMessage("LEVEL UP: " + std::to_string(player->getLevel() - 1) + "->" + std::to_string(player->getLevel()), 0, true);
     appendGameLogMessage("> XP for next level up: " + std::to_string(player->getMaxXp()) + "XP");
 
@@ -262,7 +274,7 @@ void GameWindow::playerLevelUp() {
 }
 
 void GameWindow::playerXpChange() {
-    ui->progressBar_currentXp->setValue(player->getCurrentXp());
+    ui->progressBar_currentXp->setValue(Settings::instance().getCurrentPlayer()->getCurrentXp());
 }
 
 void GameWindow::questCompleted(Quest* quest) {
@@ -275,8 +287,22 @@ void GameWindow::on_btn_exit_clicked()
     this->close();
 }
 
-void GameWindow::on_btn_help_clicked()
+void GameWindow::on_btn_save_clicked()
 {
-    appendGameLogMessage("asdasdasd", 10u);
+    assert(nullptr != board);
+
+    FileHandler handler;
+    handler.saveBoardAsFile(board);
 }
 
+void GameWindow::on_btn_load_clicked()
+{
+    FileHandler handler;
+    std::unique_ptr<Board> tmp = handler.createBoardFromFile();
+    board = tmp.release();
+
+    bool valid = Settings::instance().setSettings(board->getBoardSizeX(), board->getBoardSizeY(), board->getBombCount(), board->getDifficulty());
+    assert(valid == true); // must be true, otherwise corrupted savefile
+
+    createNewBoard(board);
+}

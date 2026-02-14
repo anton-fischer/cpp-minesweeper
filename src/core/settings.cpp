@@ -1,9 +1,10 @@
 #include "core/settings.h"
 
+#include <QDebug>
 #include <assert.h>
 
 // TODO maybe introduce enum as return value instead of bool for better exception handling
-bool Settings::setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount) {
+bool Settings::setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty) {
     //if (boardSizeX < 3 || boardSizeY < 3 || boardSizeX > 10 || boardSizeY > 10) return false; // minimum boardSize is 3x3, maximum boardSize is 10x10
     //if (bombCount < 1 || bombCount >= boardSizeX * boardSizeY / 2) return false; // minimum bombCount is 1, maximum bombCount is boardSizeX * boardSizeY / 2
 
@@ -37,10 +38,6 @@ std::unique_ptr<Player>& Settings::getCurrentPlayer() {
 
 void Settings::setCurrentPlayer(std::unique_ptr<Player>& player) {
     this->currentPlayer = std::move(player);
-}
-
-void Settings::setDifficulty(Difficulty difficulty) {
-    this->difficulty = difficulty;
 }
 
 std::string Settings::difficultyToString(const Difficulty& difficulty) {
@@ -83,3 +80,6 @@ float Settings::getDifficultyXpMultiplier(const Difficulty& difficulty) {
     return 0; // should not be reached
 }
 
+QDebug operator<<(QDebug dbg, const Settings& s) {
+    return dbg << "boardSizeX[" << s.boardSizeX << "] boardSizeY[" << s.boardSizeY << "] bombCount[" << s.bombCount << "] difficulty[" << Settings::difficultyToString(s.difficulty) << "]";
+}

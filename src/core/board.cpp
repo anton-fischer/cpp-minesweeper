@@ -8,12 +8,12 @@
 #include "core/settings.h"
 
 Board::Board(QObject* parent) :
-    Board(Settings::instance().getBoardSizeX(), Settings::instance().getBoardSizeY(), Settings::instance().getBombCount(), parent) {
+    Board(Settings::instance().getBoardSizeX(), Settings::instance().getBoardSizeY(), Settings::instance().getBombCount(), Difficulty::CUSTOM, parent) {
 };
 
 
-Board::Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, QObject* parent) :
-    boardSizeX(boardSizeX), boardSizeY(boardSizeY), bombCount(bombCount), QObject(parent) {
+Board::Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty, QObject* parent) :
+    boardSizeX(boardSizeX), boardSizeY(boardSizeY), bombCount(bombCount), difficulty(difficulty), QObject(parent) {
 
     //assert((boardSizeX >= 3 && boardSizeY >= 3 && boardSizeX <= 10 && boardSizeY <= 10) && "invalid boardSize detected while generating board");
     //assert((bombCount >= 1 && bombCount < boardSizeX * boardSizeY / 2) && "invalid bombCount detected while generating board");
@@ -193,6 +193,22 @@ Tile Board::getTile(const unsigned int x, const unsigned int y) const {
     return this->board.at(y).at(x);
 }
 
+Difficulty Board::getDifficulty() const {
+    return this->difficulty;
+}
+
+unsigned int Board::getBoardSizeX() const {
+    return this->boardSizeX;
+}
+
+unsigned int Board::getBoardSizeY() const {
+    return this->boardSizeY;
+}
+
+unsigned int Board::getBombCount() const {
+    return this->bombCount;
+}
+
 unsigned int Board::getProgress() const {
     return this->progress;
 }
@@ -202,12 +218,66 @@ unsigned int Board::getFlagCount() const {
 }
 
 std::unique_ptr<Board> Board::fromJson(const nlohmann::json& j, QObject* parent) {
-    return nullptr;
+    std::unique_ptr<Board> b = std::make_unique<Board>();
+
+    // general
+    assert(j.at("saveVersion") == SAVE_FILE_VERSION && "save file version missmatch detected while loading board");
+
+    b->difficulty = Settings::stringToDifficulty(j.at("difficulty"));
+    b->boardSizeX = j.at("boardSizeX");
+    b->boardSizeY = j.at("boardSizeY");
+    b->bombCount  = j.at("bombCount");
+
+    b->progress   = j.at("progress");
+    b->flagCount  = j.at("flagCount");
+
+    // board
+    b->board.clear();
+    b->board.resize(b->boardSizeY);
+
+    const auto& boardJson = j.at("board");
+    for (unsigned int y = 0; y < b->boardSizeY; ++y) {
+        const auto& rowJson = boardJson.at(y);
+        for (unsigned int x = 0; x < b->boardSizeX; ++x) {
+            auto tile = Tile::fromJson(rowJson.at(x));
+            b->board[y].push_back(*tile);
+        }
+    }
+
+    b->isInitialized = true;
+
+    return b;
 }
 
 nlohmann::json Board::toJson() const {
     nlohmann::json j;
+
     // general
+    j["saveVersion"] = SAVE_FILE_VERSION;
+
+    j["difficulty"]  = Settings::difficultyToString(this->difficulty);
+    j["boardSizeX"]  = this->boardSizeX;
+    j["boardSizeY"]  = this->boardSizeY;
+    j["bombCount"]   = this->bombCount;
+
+    j["progress"]    = this->progress;
+    j["flagCount"]   = this->flagCount;
+
+    // board
+    j["board"] = nlohmann::json::array();
+    for (const auto& row : board)
+    {
+        nlohmann::json rowJson = nlohmann::json::array();
+        for (const auto& tile : row)
+        {
+            rowJson.push_back(tile.toJson());
+        }
+        j["board"].push_back(rowJson);
+    }
 
     return j;
+}
+
+QDebug operator<<(QDebug dbg, const Board& b) {
+    return dbg << "difficulty[" << Settings::difficultyToString(b.difficulty) << "] boardSizeX[" << b.boardSizeX << "] boardSizeY[" << b.boardSizeY << "] bombCount[" << b.bombCount << "] progress[" << b.progress << "] flagCount[" << b.flagCount << "]";
 }

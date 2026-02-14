@@ -46,7 +46,7 @@ void Quest::generateQuest() {
     this->progress = 0;
     this->completed = false;
 
-    qDebug() << QString("Generated Quest: type[%1] goal[%2] reward[%3]").arg(questTypeToString(this->type)).arg(goal).arg(reward);
+    qDebug() << "Generated quest: " << *this;
 }
 
 std::string Quest::generateObjectiveString() const {
@@ -164,4 +164,8 @@ nlohmann::json Quest::toJson() const {
     j["progress"] = progress;
 
     return j;
+}
+
+QDebug operator<<(QDebug dbg, const Quest& q) {
+    return dbg << "type[" << Quest::questTypeToString(q.type) << "] goal[" << q.goal << "] reward[" << q.reward << "] progress[" << q.progress << "]";
 }

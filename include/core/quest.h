@@ -41,6 +41,9 @@ public:
     static std::unique_ptr<Quest> fromJson(const nlohmann::json& j, QObject* parent = nullptr);
     nlohmann::json toJson() const;
 
+    // toString
+    friend QDebug operator<<(QDebug dbg, const Quest& q);
+
 signals:
     void questCompleted(Quest* quest);
 

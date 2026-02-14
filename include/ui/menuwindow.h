@@ -31,9 +31,6 @@ private:
 
     void loadPlayer(Player* player);
 
-    void loadPlayerFromFile();
-    void savePlayerAsFile(Player* player);
-
     void appendQuest(Quest* quest);
     void clearQuests();
 };

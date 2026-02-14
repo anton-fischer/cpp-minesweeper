@@ -23,10 +23,10 @@ class GameWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit GameWindow(Player* player, QWidget* parent = nullptr);
+    explicit GameWindow(QWidget* parent = nullptr);
     ~GameWindow();
 
-    void createNewBoard();
+    void createNewBoard(Board* newBoard = nullptr);
 
 private slots:
     void tileUpdated(const unsigned int x, unsigned int y);
@@ -41,8 +41,10 @@ private slots:
     void playerXpChange();
 
     void on_btn_restart_clicked();
-    void on_btn_help_clicked();
     void on_btn_exit_clicked();
+
+    void on_btn_load_clicked();
+    void on_btn_save_clicked();
 
 private:
     Ui::GameWindow *ui;
@@ -57,8 +59,7 @@ private:
     void appendGameLogMessage(const std::string& message, const unsigned int xp = 0, const bool bold = false);
 
     Board* board = nullptr;
-    Player* player = nullptr;
-
     QGridLayout* boardGrid = nullptr;
+
     std::vector<std::vector<TileButton*>> boardGridTiles;
 };

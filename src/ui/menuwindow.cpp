@@ -111,29 +111,22 @@ void MenuWindow::loadPlayer(Player* player) {
     ui->btn_save->setDisabled(false);
 }
 
-void MenuWindow::loadPlayerFromFile() {
+void MenuWindow::on_btn_save_clicked()
+{
+    assert(nullptr != Settings::instance().getCurrentPlayer());
+
+    FileHandler handler;
+    handler.savePlayerAsFile(Settings::instance().getCurrentPlayer().get());
+}
+
+void MenuWindow::on_btn_load_clicked()
+{
     FileHandler handler;
     auto player = handler.createPlayerFromFile();
 
     Settings::instance().setCurrentPlayer(player);
 
     loadPlayer(Settings::instance().getCurrentPlayer().get());
-}
-
-void MenuWindow::savePlayerAsFile(Player* player) {
-    FileHandler handler;
-    handler.savePlayerAsFile(player);
-}
-
-void MenuWindow::on_btn_save_clicked()
-{
-    assert(nullptr != Settings::instance().getCurrentPlayer());
-    savePlayerAsFile(Settings::instance().getCurrentPlayer().get());
-}
-
-void MenuWindow::on_btn_load_clicked()
-{
-    loadPlayerFromFile();
 }
 
 void MenuWindow::on_btn_exit_clicked()
@@ -165,7 +158,7 @@ void MenuWindow::on_btn_play_clicked()
         }
     }
 
-    GameWindow* window = new GameWindow(Settings::instance().getCurrentPlayer().get());
+    GameWindow* window = new GameWindow();
     window->show();
     this->close();
 }

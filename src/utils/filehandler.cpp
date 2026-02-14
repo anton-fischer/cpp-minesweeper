@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QString>
 #include <QDebug>
+#include <QFileInfo>
 
 #include "core/board.h"
 #include "core/player.h"
@@ -22,7 +23,8 @@ void FileHandler::saveBoardAsFile(Board* board, std::string filepath) {
     file.write(output.toUtf8());
     file.close();
 
-    qDebug() << "Successfully saved board: " << file.fileName();
+    QFileInfo info(file);
+    qDebug() << "Successfully saved board: " << *board << " at location: " << info.absoluteFilePath();
 }
 
 void FileHandler::savePlayerAsFile(Player* player, std::string filepath) {
@@ -38,7 +40,8 @@ void FileHandler::savePlayerAsFile(Player* player, std::string filepath) {
     file.write(output.toUtf8());
     file.close();
 
-    qDebug() << "Successfully saved player: " << file.fileName();
+    QFileInfo info(file);
+    qDebug() << "Successfully saved player: " << *player << " at location: " << info.absoluteFilePath();
 }
 
 std::unique_ptr<Player> FileHandler::createPlayerFromFile(std::string filepath) {
@@ -56,7 +59,7 @@ std::unique_ptr<Player> FileHandler::createPlayerFromFile(std::string filepath) 
 
         auto player = Player::fromJson(j);
 
-        qDebug() << "Successfully loaded player";
+        qDebug() << "Successfully loaded player: " << *player;
         return player;
     }
     catch (const std::exception& e) {
@@ -66,10 +69,25 @@ std::unique_ptr<Player> FileHandler::createPlayerFromFile(std::string filepath) 
 }
 
 std::unique_ptr<Board> FileHandler::createBoardFromFile(std::string filepath) {
-    Board* b = new Board();
+    QFile file(QString::fromStdString(filepath));
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Error when opening file to load board";
+        return nullptr;
+    }
 
-    // TODO implement logic
+    QByteArray rawData = file.readAll();
+    file.close();
 
-    qDebug() << "Successfully loaded board";
-    return std::make_unique<Board>(b);
+    try {
+        json j = json::parse(rawData.constData());
+
+        auto board = Board::fromJson(j);
+
+        qDebug() << "Successfully loaded board: " << *board;
+        return board;
+    }
+    catch (const std::exception& e) {
+        qDebug() << "JSON parse error while loading board:" << e.what();
+        return nullptr;
+    }
 }

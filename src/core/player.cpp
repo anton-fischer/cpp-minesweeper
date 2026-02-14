@@ -255,3 +255,7 @@ nlohmann::json Player::toJson() const {
 
     return j;
 }
+
+QDebug operator<<(QDebug dbg, const Player& p) {
+    return dbg << "level[" << p.level << "] maxXp[" << p.maxXp << "] currentXp[" << p.currentXp << "]";
+}

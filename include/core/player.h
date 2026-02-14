@@ -55,6 +55,9 @@ public:
     static std::unique_ptr<Player> fromJson(const nlohmann::json& j, QObject* parent = nullptr);
     nlohmann::json toJson() const;
 
+    // toString
+    friend QDebug operator<<(QDebug dbg, const Player& p);
+
 signals:
     void playerLevelUp();
     void playerXpChange();

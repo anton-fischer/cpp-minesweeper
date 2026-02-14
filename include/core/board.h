@@ -4,7 +4,7 @@
 #include <QObject>
 
 #include "Tile.h"
-#include "utils/json.hpp"
+#include "core/settings.h"
 
 #define SAVE_FILE_VERSION 1
 
@@ -14,7 +14,7 @@ class Board : public QObject
 
 public:
     explicit Board(QObject* parent = nullptr); // generate board based on current settings
-    Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, QObject* parent = nullptr); // generate board based on values
+    Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty = Difficulty::CUSTOM, QObject* parent = nullptr); // generate board based on values
     ~Board() = default;
 
     bool placeFlag(const unsigned int x, const unsigned int y);
@@ -25,12 +25,21 @@ public:
     std::vector<std::vector<Tile>> getBoard() const;
     Tile getTile(const unsigned int x, const unsigned int y) const;
 
+    Difficulty getDifficulty() const;
+
+    unsigned int getBoardSizeX() const;
+    unsigned int getBoardSizeY() const;
+    unsigned int getBombCount() const;
+
     unsigned int getProgress() const;
     unsigned int getFlagCount() const;
 
     // persistor
     static std::unique_ptr<Board> fromJson(const nlohmann::json& j, QObject* parent = nullptr);
     nlohmann::json toJson() const;
+
+    // toString
+    friend QDebug operator<<(QDebug dbg, const Board& b);
 
 signals:
     void tileUpdated(const unsigned int x, const unsigned int y);
@@ -40,6 +49,8 @@ signals:
     void gameWon();
 
 private:
+    Difficulty difficulty;
+
     unsigned int boardSizeX;
     unsigned int boardSizeY;
     unsigned int bombCount;

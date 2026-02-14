@@ -26,13 +26,12 @@ public:
 
     // updates settings and returns true for valid input, false for invalid input
     // nothing is changed when false returned
-    bool setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount);
+    bool setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty = Difficulty::CUSTOM);
 
     std::unique_ptr<Player>& getCurrentPlayer();
     void setCurrentPlayer(std::unique_ptr<Player>& player);
 
     Difficulty getDifficulty() const;
-    void setDifficulty(Difficulty difficulty);
 
     unsigned int getBoardSizeX() const;
     unsigned int getBoardSizeY() const;
@@ -41,6 +40,9 @@ public:
     static std::string difficultyToString(const Difficulty& difficulty);
     static Difficulty  stringToDifficulty(const std::string& string);
     static float       getDifficultyXpMultiplier(const Difficulty& difficulty);
+
+    // toString
+    friend QDebug operator<<(QDebug dbg, const Settings& s);
 
 private:
     // private constructor
