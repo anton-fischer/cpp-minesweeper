@@ -38,7 +38,6 @@ private slots:
     void questCompleted(Quest* quest);
 
     void playerLevelUp();
-    void playerXpChange();
 
     void on_btn_restart_clicked();
     void on_btn_exit_clicked();

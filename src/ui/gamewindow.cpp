@@ -9,6 +9,8 @@
 #include "ui/settingsDialog.h"
 #include "ui/enddialog.h"
 #include "ui/menuwindow.h"
+#include "ui/levelelement.h"
+
 #include "core/settings.h"
 #include "core/player.h"
 
@@ -23,17 +25,14 @@ GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWi
 
     auto& player = Settings::instance().getCurrentPlayer();
     connect(player.get(), &Player::playerLevelUp, this, &GameWindow::playerLevelUp);
-    connect(player.get(), &Player::playerXpChange, this, &GameWindow::playerXpChange);
 
     for (auto& quest : player->getQuests()) {
         connect(quest.get(), &Quest::questCompleted, this, &GameWindow::questCompleted);
     }
 
     // level progress
-    ui->lbl_currentLevel->setText(QString("Level %1").arg(player->getLevel()));
-    ui->lbl_nextLevel->setText(QString("Level %1").arg(player->getLevel() + 1));
-    ui->progressBar_currentXp->setMaximum(player->getMaxXp());
-    ui->progressBar_currentXp->setValue(player->getCurrentXp());
+    auto levelElement = new LevelElement(player.get(), this);
+    ui->hbx_level->addWidget(levelElement);
 
     createNewBoard();
 }
@@ -66,7 +65,7 @@ void GameWindow::createNewBoard(Board* newBoard) {
 
     boardUpdated();
 
-    this->resize(this->sizeHint()); // resize in case board size changed
+    //this->resize(this->sizeHint()); // resize in case board size changed
 }
 
 void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button) {
@@ -267,14 +266,6 @@ void GameWindow::playerLevelUp() {
 
     appendGameLogMessage("LEVEL UP: " + std::to_string(player->getLevel() - 1) + "->" + std::to_string(player->getLevel()), 0, true);
     appendGameLogMessage("> XP for next level up: " + std::to_string(player->getMaxXp()) + "XP");
-
-    ui->lbl_currentLevel->setText(QString("Level %1").arg(player->getLevel()));
-    ui->lbl_nextLevel->setText(QString("Level %1").arg(player->getLevel() + 1));
-    ui->progressBar_currentXp->setMaximum(player->getMaxXp());
-}
-
-void GameWindow::playerXpChange() {
-    ui->progressBar_currentXp->setValue(Settings::instance().getCurrentPlayer()->getCurrentXp());
 }
 
 void GameWindow::questCompleted(Quest* quest) {

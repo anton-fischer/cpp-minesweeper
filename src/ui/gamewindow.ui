@@ -281,37 +281,9 @@
         </item>
         <item>
          <layout class="QHBoxLayout" name="hbx_level">
-          <item>
-           <widget class="QLabel" name="lbl_currentLevel">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Level 0</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QProgressBar" name="progressBar_currentXp">
-            <property name="value">
-             <number>0</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="lbl_nextLevel">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Level 1</string>
-            </property>
-           </widget>
-          </item>
+          <property name="spacing">
+           <number>0</number>
+          </property>
          </layout>
         </item>
         <item>
@@ -343,7 +315,7 @@
              <x>0</x>
              <y>0</y>
              <width>309</width>
-             <height>262</height>
+             <height>286</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">

@@ -4,6 +4,9 @@
 #include <QToolButton>
 
 #include "ui/gamewindow.h"
+#include "ui/questelement.h"
+#include "ui/levelelement.h"
+
 #include "core/player.h"
 #include "core/quest.h"
 
@@ -31,10 +34,8 @@ EndDialog::EndDialog(Player* player, bool gameWon, QWidget *parent) : player(pla
     }
 
     // level progress
-    ui->lbl_currentLevel->setText(QString("Level %1").arg(player->getLevel()));
-    ui->lbl_nextLevel->setText(QString("Level %1").arg(player->getLevel() + 1));
-    ui->progressBar_currentXp->setMaximum(player->getMaxXp());
-    ui->progressBar_currentXp->setValue(player->getCurrentXp());
+    auto levelElement = new LevelElement(player, this);
+    ui->hbx_level->addWidget(levelElement);
 
     // quests
     for (auto& quest : player->getQuests()) {
@@ -43,37 +44,8 @@ EndDialog::EndDialog(Player* player, bool gameWon, QWidget *parent) : player(pla
 }
 
 void EndDialog::appendQuest(Quest* quest) {
-    auto* widget = new QWidget(this);
-    auto* layout = new QHBoxLayout(widget);
-    layout->setContentsMargins(0,0,0,0);
-
-    auto* objectiveLabel = new QLabel(QString::fromStdString(quest->generateObjectiveString()), widget);
-    objectiveLabel->setMinimumWidth(150);
-    objectiveLabel->setMinimumHeight(30);
-
-    auto* progressBar = new QProgressBar(widget);
-    progressBar->setMaximum(quest->getGoal());
-    progressBar->setValue(quest->getProgress());
-
-    auto* rerollButton = new QToolButton(widget);
-    rerollButton->setMinimumWidth(30);
-    rerollButton->setMinimumHeight(30);
-    rerollButton->setText("🔄️");
-
-    // add click handler
-    connect(rerollButton, &QToolButton::clicked, this, [=]() {
-        quest->regenerateQuest();
-
-        objectiveLabel->setText(QString::fromStdString(quest->generateObjectiveString()));
-        progressBar->setMaximum(quest->getGoal());
-        progressBar->setValue(quest->getProgress());
-    });
-
-    layout->addWidget(objectiveLabel);
-    layout->addWidget(progressBar);
-    layout->addWidget(rerollButton);
-
-    ui->quests_container->addWidget(widget);
+    auto newQuest = new QuestElement(quest, this);
+    ui->quests_container->addWidget(newQuest);
 }
 
 EndDialog::~EndDialog()

@@ -4,10 +4,13 @@
 
 class Player;
 class Quest;
+class LevelElement;
 
+QT_BEGIN_NAMESPACE
 namespace Ui {
 class MenuWindow;
 }
+QT_END_NAMESPACE
 
 class MenuWindow : public QMainWindow
 {
@@ -26,6 +29,8 @@ private slots:
 
 private:
     Ui::MenuWindow *ui;
+
+    LevelElement* levelElement = nullptr;
 
     void closeEvent(QCloseEvent* event) override;
 

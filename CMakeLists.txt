@@ -25,18 +25,19 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(minesweeper
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        resources.qrc
         include/core/board.h src/core/board.cpp
         include/core/tile.h src/core/tile.cpp
-        include/ui/settingsDialog.h src/ui/settingsDialog.cpp src/ui/settingsDialog.ui
         include/core/settings.h src/core/settings.cpp
-        include/ui/tilebutton.h src/ui/tilebutton.cpp
         include/core/player.h src/core/player.cpp
-        include/utils/filehandler.h src/utils/filehandler.cpp
-        resources.qrc
-        include/ui/menuwindow.h src/ui/menuwindow.cpp src/ui/menuwindow.ui
         include/core/quest.h src/core/quest.cpp
+        include/ui/tilebutton.h src/ui/tilebutton.cpp
+        include/utils/filehandler.h src/utils/filehandler.cpp
+        include/ui/settingsDialog.h src/ui/settingsDialog.cpp src/ui/settingsDialog.ui
+        include/ui/menuwindow.h src/ui/menuwindow.cpp src/ui/menuwindow.ui
         include/ui/enddialog.h src/ui/enddialog.cpp src/ui/enddialog.ui
-
+        include/ui/questelement.h src/ui/questelement.cpp src/ui/questElement.ui
+        include/ui/levelelement.h src/ui/levelelement.cpp src/ui/levelElement.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET minesweeper APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
