@@ -17,8 +17,10 @@ public:
     Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty = Difficulty::CUSTOM, QObject* parent = nullptr); // generate board based on values
     ~Board() = default;
 
-    bool placeFlag(const unsigned int x, const unsigned int y);
+    // return -1 if flag removed, 0 if nothing changed, 1 if flag placed
+    int placeFlag(const unsigned int x, const unsigned int y);
 
+    // return amount of revealed tiles
     unsigned int revealTile(const unsigned int x, const unsigned int y);
     unsigned int revealAllTiles();
 

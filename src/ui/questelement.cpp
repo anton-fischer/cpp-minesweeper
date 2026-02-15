@@ -19,11 +19,34 @@ QuestElement::~QuestElement()
 
 void QuestElement::updateQuest()
 {
-    ui->lbl_title->setText(QString::fromStdString(Quest::questTypeToString(quest->getType())));
+    ui->lbl_title->setText(QString::fromStdString(quest->generateObjectiveString()));
     ui->lbl_reward->setText(QString("[%1XP]").arg(quest->getReward()));
 
-    ui->lbl_rarity->setText("SR"); // TODO implement support for this
-    ui->lbl_rarity->setStyleSheet("color: #FFC800;");
+    static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END),  "QuestRarity enum version mismatch");
+    switch (quest->getRarity())
+    {
+        case QuestRarity::COMMON: {
+            ui->lbl_rarity->setText("C");
+            ui->lbl_rarity->setStyleSheet("color: #20d300;");
+            break;
+        }
+        case QuestRarity::RARE: {
+            ui->lbl_rarity->setText("R");
+            ui->lbl_rarity->setStyleSheet("color: #0083d3;");
+            break;
+        }
+        case QuestRarity::EPIC: {
+            ui->lbl_rarity->setText("E");
+            ui->lbl_rarity->setStyleSheet("color: #b700d3;");
+            break;
+        }
+        case QuestRarity::LEGENDARY: {
+            ui->lbl_rarity->setText("SR");
+            ui->lbl_rarity->setStyleSheet("color: #FFC800;");
+            break;
+        }
+        default: assert(false);
+    }
 
     ui->progressBar->setMaximum(quest->getGoal());
     ui->progressBar->setValue(quest->getProgress());

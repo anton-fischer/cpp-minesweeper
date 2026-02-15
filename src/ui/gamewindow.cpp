@@ -74,35 +74,37 @@ void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, con
 
     // place flag
     if (button == Qt::RightButton || (button == Qt::LeftButton && ui->btn_flag->isChecked())) {
-        bool flagPlaced = board->placeFlag(x, y);
-        if (flagPlaced) {
+        int flagPlaced = board->placeFlag(x, y);
+        if (flagPlaced == 1) { // flag placed
             player->incrementAmountFlagsPlaced(1);
             appendGameLogMessageWithXp("Flag placed", 10);
+        } else if (flagPlaced == -1) { // flag removed
+            player->decrementAmountFlagsPlaced(1);
+            player->decrementXp(10);
         }
-
-        // TODO handle case when flag removed
     }
     // uncover tile
     else if (button == Qt::LeftButton) {
-        unsigned amountRevealed = board->revealTile(x, y);
+        unsigned int amountRevealed = board->revealTile(x, y);
         player->incrementAmountTilesUncovered(amountRevealed);
         appendGameLogMessageWithXp("Tiles uncovered", amountRevealed);
     }
 }
 
-void GameWindow::appendGameLogMessageWithXp(const std::string& message, const unsigned int xp, const bool bold) {
+void GameWindow::appendGameLogMessageWithXp(const std::string& message, const unsigned int xp, const bool bold, const std::string color) {
     unsigned int xpGain = xp * Settings::getDifficultyXpMultiplier(board->getDifficulty());
     Settings::instance().getCurrentPlayer()->incrementXp(xpGain);
-    appendGameLogMessage(message, xpGain, bold);
+    appendGameLogMessage(message, xpGain, bold, color);
 }
 
-void GameWindow::appendGameLogMessage(const std::string& message, const unsigned int xp, const bool bold) {
+void GameWindow::appendGameLogMessage(const std::string& message, const unsigned int xp, const bool bold, const std::string color) {
     auto* widget = new QWidget(this);
     auto* layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0,0,0,0);
 
     auto* messageLabel = new QLabel(QString::fromStdString(message), widget);
     messageLabel->setMaximumHeight(20);
+    if (!color.empty()) messageLabel->setStyleSheet(QString("color: %1;").arg(color));
 
     if (bold) {
         QFont f = this->font();
@@ -115,12 +117,15 @@ void GameWindow::appendGameLogMessage(const std::string& message, const unsigned
 
     if (xp != 0u) {
         auto* xpLabel = new QLabel(QString::fromStdString("+" + std::to_string(xp) + "XP"), widget);
+
+        xpLabel->setMaximumWidth(50);
+        xpLabel->setMaximumHeight(20);
+        if (!color.empty()) xpLabel->setStyleSheet(QString("color: %1;").arg(color));
+
         QFont f = this->font();
         f.setPointSize(10);
         f.setBold(true);
         xpLabel->setFont(f);
-        xpLabel->setMaximumWidth(50);
-        xpLabel->setMaximumHeight(20);
 
         layout->addWidget(xpLabel);
     }
@@ -226,7 +231,7 @@ void GameWindow::bombHit() {
     player->incrementAmountGamesPlayed(1);
 
     // xp and log message
-    appendGameLogMessageWithXp("GAME OVER: Bomb hit!", 50, true);
+    appendGameLogMessageWithXp("GAME OVER: Bomb hit!", 50, true, "#d80000");
 
     EndDialog dialog(player.get(), false, this);
     dialog.exec();
@@ -253,7 +258,7 @@ void GameWindow::gameWon() {
     player->incrementAmountGamesPlayed(1);
 
     // xp and log message
-    appendGameLogMessageWithXp("GAME OVER: You win!", 200, true);
+    appendGameLogMessageWithXp("GAME OVER: You win!", 200, true, "#00d840");
 
     EndDialog dialog(player.get(), true, this);
     dialog.exec();
@@ -264,13 +269,13 @@ void GameWindow::gameWon() {
 void GameWindow::playerLevelUp() {
     auto& player = Settings::instance().getCurrentPlayer();
 
-    appendGameLogMessage("LEVEL UP: " + std::to_string(player->getLevel() - 1) + "->" + std::to_string(player->getLevel()), 0, true);
-    appendGameLogMessage("> XP for next level up: " + std::to_string(player->getMaxXp()) + "XP");
+    appendGameLogMessage("LEVEL UP: " + std::to_string(player->getLevel() - 1) + "->" + std::to_string(player->getLevel()), 0, true, "#fdb800");
+    appendGameLogMessage("> XP for next level up: " + std::to_string(player->getMaxXp()) + "XP", 0, false, "#fdb800");
 }
 
 void GameWindow::questCompleted(Quest* quest) {
-    appendGameLogMessageWithXp("QUEST COMPLETED", quest->getReward(), true);
-    appendGameLogMessage(">" + quest->generateObjectiveString());
+    appendGameLogMessageWithXp("QUEST COMPLETED", quest->getReward(), true, "#fdb800");
+    appendGameLogMessage(">" + quest->generateObjectiveString(), 0, false, "#fdb800");
 }
 
 void GameWindow::on_btn_exit_clicked()
@@ -284,6 +289,8 @@ void GameWindow::on_btn_save_clicked()
 
     FileHandler handler;
     handler.saveBoardAsFile(board);
+    appendGameLogMessage("Successfully saved current game", 0, true, "#00d840");
+
 }
 
 void GameWindow::on_btn_load_clicked()
@@ -296,4 +303,5 @@ void GameWindow::on_btn_load_clicked()
     assert(valid == true); // must be true, otherwise corrupted savefile
 
     createNewBoard(board);
+    appendGameLogMessage("Successfully loaded game", 0, true, "#00d840");
 }

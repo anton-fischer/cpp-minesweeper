@@ -10,38 +10,16 @@ Quest::Quest(QObject* parent) : QObject(parent) {
 }
 
 void Quest::generateQuest() {
-    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END),  "QuestType enum version mismatch");
+    this->type =   static_cast<QuestType>  (QRandomGenerator::global()->bounded(1, static_cast<int>(QuestType::_END)));
+    this->rarity = static_cast<QuestRarity>(QRandomGenerator::global()->bounded(1, static_cast<int>(QuestRarity::_END)));
 
-    const unsigned int type = QRandomGenerator::global()->bounded(1, static_cast<int>(QuestType::_END));
+    auto& questTypeData =   TYPE_CONVERSION_TABLE[static_cast<int>(type)];
+    auto& questRarityData = RARITY_CONVERSION_TABLE[static_cast<int>(rarity)];
 
-    switch(static_cast<QuestType>(type)) {
-        case QuestType::PLAY_GAMES: {
-            this->type = QuestType::PLAY_GAMES;
-            this->goal = QRandomGenerator::global()->bounded(1, 51);
-            this->reward = goal * 10;
-            break;
-        }
-        case QuestType::WIN_GAMES: {
-            this->type = QuestType::WIN_GAMES;
-            this->goal = QRandomGenerator::global()->bounded(1, 21);
-            this->reward = goal * 100;
-            break;
-        }
-        case QuestType::PLACE_FLAGS: {
-            this->type = QuestType::PLACE_FLAGS;
-            this->goal = QRandomGenerator::global()->bounded(1, 101);
-            this->reward = goal * 0.5;
-            break;
-        }
-        case QuestType::UNCOVER_TILES: {
-            this->type = QuestType::UNCOVER_TILES;
-            this->goal = QRandomGenerator::global()->bounded(1, 501);
-            this->reward = goal * 0.25;
-            break;
-        }
+    const unsigned int generatedQuestGoal = QRandomGenerator::global()->bounded(questTypeData.minGoal, questTypeData.maxGoal + 1);
 
-        default: assert(false);
-    }
+    this->goal = std::round(generatedQuestGoal * questRarityData.difficultyMultiplier);
+    this->reward = std::round(goal * questTypeData.xpPerUnit * questRarityData.rewardMultiplier);
 
     this->progress = 0;
     this->completed = false;
@@ -62,8 +40,6 @@ std::string Quest::generateObjectiveString() const {
         default: assert(false);
     }
 
-    returnString << " [" << std::to_string(reward) << "XP]";
-
     return returnString.str();
 }
 
@@ -73,6 +49,10 @@ void Quest::regenerateQuest() {
 
 QuestType Quest::getType() const {
     return this->type;
+}
+
+QuestRarity Quest::getRarity() const {
+    return this->rarity;
 }
 
 unsigned int Quest::getGoal() const {
@@ -94,6 +74,7 @@ void Quest::advanceProgress(const unsigned int newProgress) {
         this->progress = goal;
         emit questCompleted(this);
         completed = true;
+        qDebug() << QString("Completed Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
         return;
     }
 
@@ -109,6 +90,7 @@ void Quest::setProgress(const unsigned int newProgress) {
         this->progress = goal;
         emit questCompleted(this);
         completed = true;
+        qDebug() << QString("Completed Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
         return;
     }
 
@@ -142,11 +124,38 @@ QuestType Quest::stringToQuestType(const std::string& string) {
     return QuestType::_END; // should not be reached
 }
 
+std::string Quest::questRarityToString(const QuestRarity& questRarity) {
+    static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END),  "QuestRarity enum version mismatch");
+
+    switch(questRarity) {
+    case (QuestRarity::COMMON):    return "COMMON";
+    case (QuestRarity::RARE):      return "RARE";
+    case (QuestRarity::EPIC):      return "EPIC";
+    case (QuestRarity::LEGENDARY): return "LEGENDARY";
+    default: assert(false);
+    }
+
+    return ""; // should not be reached
+}
+
+QuestRarity Quest::stringToQuestRarity(const std::string& string) {
+    static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END),  "QuestRarity enum version mismatch");
+
+    if      (string == "COMMON")    return QuestRarity::COMMON;
+    else if (string == "RARE")      return QuestRarity::RARE;
+    else if (string == "EPIC")      return QuestRarity::EPIC;
+    else if (string == "LEGENDARY") return QuestRarity::LEGENDARY;
+    else assert(false);
+
+    return QuestRarity::_END; // should not be reached
+}
+
 std::unique_ptr<Quest> Quest::fromJson(const nlohmann::json& j, QObject* parent) {
     std::unique_ptr<Quest> q = std::make_unique<Quest>();
 
     // general
     q->type     = stringToQuestType(j.at("type"));
+    q->rarity   = stringToQuestRarity(j.at("rarity"));
     q->goal     = j.at("goal");
     q->reward   = j.at("reward");
     q->progress = j.at("progress");
@@ -159,6 +168,7 @@ nlohmann::json Quest::toJson() const {
 
     // general
     j["type"]     = questTypeToString(type);
+    j["rarity"]   = questRarityToString(rarity);
     j["goal"]     = goal;
     j["reward"]   = reward;
     j["progress"] = progress;
@@ -167,5 +177,5 @@ nlohmann::json Quest::toJson() const {
 }
 
 QDebug operator<<(QDebug dbg, const Quest& q) {
-    return dbg << "type[" << Quest::questTypeToString(q.type) << "] goal[" << q.goal << "] reward[" << q.reward << "] progress[" << q.progress << "]";
+    return dbg << "type[" << Quest::questTypeToString(q.type) << "] rarity[" << Quest::questRarityToString(q.rarity) << "] goal[" << q.goal << "] reward[" << q.reward << "] progress[" << q.progress << "]";
 }

@@ -93,13 +93,20 @@ unsigned int Player::getPlayerCount() {
 void Player::incrementXp(const unsigned int amount) {
     this->currentXp += amount;
 
-    if (currentXp >= maxXp) {
+    while (currentXp >= maxXp) {
         currentXp -= maxXp;  // take rest xp
         level++;             // level up
         maxXp = maxXp * 1.5; // increase needed xp for level up
 
         emit playerLevelUp();
     }
+
+    emit playerXpChange();
+}
+
+void Player::decrementXp(const unsigned int amount) {
+    if (amount >= this->currentXp) this->currentXp = 0;
+    else this->currentXp -= amount;
 
     emit playerXpChange();
 }
@@ -191,7 +198,13 @@ void Player::decrementAmountFlagsPlaced(const unsigned int amount) {
     assert(this->amountFlagsPlaced - amount >= 0);
     this->amountFlagsPlaced -= amount;
 
-    // TODO implement quest logic for this case
+    // revert quests if available
+    for (auto& quest : this->quests) {
+        if (quest->getType() == QuestType::PLACE_FLAGS) {
+            unsigned int currentProgress = quest->getProgress();
+            quest->setProgress(currentProgress - amount);
+        }
+    }
 }
 
 std::unique_ptr<Player> Player::fromJson(const nlohmann::json& j, QObject* parent) {

@@ -53,9 +53,9 @@ private:
     void handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button);
 
     // log message and increment player xp based on difficulty
-    void appendGameLogMessageWithXp(const std::string& message, const unsigned int xp = 0, const bool bold = false);
+    void appendGameLogMessageWithXp(const std::string& message, const unsigned int xp = 0, const bool bold = false, const std::string color = "");
     // only log message without changing player xp
-    void appendGameLogMessage(const std::string& message, const unsigned int xp = 0, const bool bold = false);
+    void appendGameLogMessage(const std::string& message, const unsigned int xp = 0, const bool bold = false, const std::string color = "");
 
     Board* board = nullptr;
     QGridLayout* boardGrid = nullptr;

@@ -25,6 +25,7 @@ public:
 
     // xp
     void incrementXp(const unsigned int amount = 1);
+    void decrementXp(const unsigned int amount = 1); // doesn't revert level ups, avoid to use
 
     unsigned int getLevel() const;
     unsigned int getMaxXp() const;
