@@ -15,6 +15,19 @@ enum class Difficulty {
     _END = 4
 };
 
+struct DifficultyData {
+    unsigned int boardSizeX;
+    unsigned int boardSizeY;
+    unsigned int bombCount;
+};
+
+static const std::array<DifficultyData, static_cast<int>(Difficulty::_END)> DIFFICULTY_DATA_TABLE = {{
+    {9,  9,  10},   // EASY
+    {16, 16, 40},   // MEDIUM
+    {30, 16, 99},   // HARD
+    {0,  0,   0}    // CUSTOM
+}};
+
 class Settings
 {
 public:
@@ -26,7 +39,8 @@ public:
 
     // updates settings and returns true for valid input, false for invalid input
     // nothing is changed when false returned
-    bool setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty = Difficulty::CUSTOM);
+    bool setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount);
+    bool setSettings(const Difficulty difficulty);
 
     std::unique_ptr<Player>& getCurrentPlayer();
     void setCurrentPlayer(std::unique_ptr<Player>& player);
@@ -55,9 +69,9 @@ private:
 
     std::unique_ptr<Player> currentPlayer = nullptr;
 
-    Difficulty difficulty = Difficulty::CUSTOM;
+    Difficulty difficulty = Difficulty::EASY;
 
-    unsigned int boardSizeX = 10;
-    unsigned int boardSizeY = 10;
-    unsigned int bombCount = 10;
+    unsigned int boardSizeX = DIFFICULTY_DATA_TABLE[static_cast<int>(difficulty)].boardSizeX;
+    unsigned int boardSizeY = DIFFICULTY_DATA_TABLE[static_cast<int>(difficulty)].boardSizeY;
+    unsigned int bombCount =  DIFFICULTY_DATA_TABLE[static_cast<int>(difficulty)].bombCount;
 };

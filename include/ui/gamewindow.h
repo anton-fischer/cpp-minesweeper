@@ -57,6 +57,8 @@ private:
     // only log message without changing player xp
     void appendGameLogMessage(const std::string& message, const unsigned int xp = 0, const bool bold = false, const std::string color = "");
 
+    void showStatusBarMessage(QString message, unsigned int timeout) const;
+
     Board* board = nullptr;
     QGridLayout* boardGrid = nullptr;
 

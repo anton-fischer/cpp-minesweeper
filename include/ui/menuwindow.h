@@ -38,4 +38,6 @@ private:
 
     void appendQuest(Quest* quest);
     void clearQuests();
+
+    void showStatusBarMessage(QString message, unsigned int timeout) const;
 };

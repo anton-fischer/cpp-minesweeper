@@ -5,6 +5,7 @@
 #include <QLayout>
 #include <QScrollBar>
 #include <QSizePolicy>
+#include <QTimer>
 
 #include "ui/settingsDialog.h"
 #include "ui/enddialog.h"
@@ -19,7 +20,7 @@
 GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWindow) {
     ui->setupUi(this);
     ui->progressBar_progress->setValue(0);
-    ui->gamelog_container->setAlignment(Qt::AlignTop);
+    ui->vbx_gamelog->setAlignment(Qt::AlignTop);
 
     this->setWindowTitle("Minesweeper");
 
@@ -33,6 +34,11 @@ GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWi
     // level progress
     auto levelElement = new LevelElement(player.get(), this);
     ui->hbx_level->addWidget(levelElement);
+
+    ui->hbx_main->setStretchFactor(ui->vbx_left, 3);
+    ui->hbx_main->setStretchFactor(ui->vbx_right, 2);
+
+    showStatusBarMessage("Minesweeper v1.0", 0);
 
     createNewBoard();
 }
@@ -53,6 +59,7 @@ void GameWindow::closeEvent(QCloseEvent* event)
     QMainWindow::closeEvent(event);
 }
 
+// TODO merge boardUpdated into here??
 void GameWindow::createNewBoard(Board* newBoard) {
     if (nullptr == newBoard) board = new Board(this);
     else board = newBoard;
@@ -64,6 +71,10 @@ void GameWindow::createNewBoard(Board* newBoard) {
     connect(board, &Board::gameWon, this, &GameWindow::gameWon);
 
     boardUpdated();
+
+    showStatusBarMessage("Successfully created new board", 5000);
+
+    this->setWindowTitle(QString("Minesweeper - %1").arg(Settings::difficultyToString(board->getDifficulty())));
 
     //this->resize(this->sizeHint()); // resize in case board size changed
 }
@@ -130,10 +141,18 @@ void GameWindow::appendGameLogMessage(const std::string& message, const unsigned
         layout->addWidget(xpLabel);
     }
 
-    ui->gamelog_container->addWidget(widget);
+    ui->vbx_gamelog->addWidget(widget);
 
-    QScrollBar* vbar = ui->scrollArea_gamelog->verticalScrollBar();
+    QScrollBar* vbar = ui->scrollarea_gamelog->verticalScrollBar();
     vbar->setValue(vbar->maximum());
+}
+
+void GameWindow::showStatusBarMessage(QString message, unsigned int timeout) const {
+    statusBar()->showMessage(message, timeout);
+
+    QTimer::singleShot(timeout, this, [this]() {
+        ui->statusbar->showMessage("Minesweeper v1.0");
+    });
 }
 
 void GameWindow::on_btn_restart_clicked()
@@ -165,7 +184,7 @@ void GameWindow::tileUpdated(const unsigned int x, unsigned int y) {
     }
 
     ui->progressBar_progress->setValue(board->getProgress());
-    ui->lcd_flag_count->display(static_cast<int>(board->getFlagCount()));
+    ui->lcd_flagCount->display(static_cast<int>(board->getFlagCount()));
 
     //qDebug() << QString("Tile at x[%1] y[%2] updated to text [%3]").arg(x).arg(y).arg(btn->text());
 }
@@ -191,7 +210,7 @@ void GameWindow::boardUpdated() {
     const unsigned int sizeY = board->getBoardSizeY();
 
     ui->progressBar_progress->setMaximum(sizeX * sizeY);
-    ui->lcd_flag_count->display(static_cast<int>(board->getFlagCount()));
+    ui->lcd_flagCount->display(static_cast<int>(board->getFlagCount()));
     ui->btn_status->setText("😊");
 
     boardGridTiles.clear();
@@ -218,6 +237,7 @@ void GameWindow::boardUpdated() {
     }
 
     ui->grid->setDisabled(false);
+
     qDebug() << "Finished updating board grid";
 }
 
@@ -291,6 +311,7 @@ void GameWindow::on_btn_save_clicked()
     handler.saveBoardAsFile(board);
     appendGameLogMessage("Successfully saved current game", 0, true, "#00d840");
 
+    showStatusBarMessage(QString("Successfully saved board at location %1").arg("standard path"), 5000);
 }
 
 void GameWindow::on_btn_load_clicked()
@@ -299,9 +320,14 @@ void GameWindow::on_btn_load_clicked()
     std::unique_ptr<Board> tmp = handler.createBoardFromFile();
     board = tmp.release();
 
-    bool valid = Settings::instance().setSettings(board->getBoardSizeX(), board->getBoardSizeY(), board->getBombCount(), board->getDifficulty());
+    bool valid = false;
+    if (board->getDifficulty() == Difficulty::CUSTOM) valid = Settings::instance().setSettings(board->getBoardSizeX(), board->getBoardSizeY(), board->getBombCount());
+    else                                              valid = Settings::instance().setSettings(board->getDifficulty());
+
     assert(valid == true); // must be true, otherwise corrupted savefile
 
     createNewBoard(board);
     appendGameLogMessage("Successfully loaded game", 0, true, "#00d840");
+
+    showStatusBarMessage(QString("Successfully laoded board"), 5000);
 }

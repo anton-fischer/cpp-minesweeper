@@ -8,11 +8,10 @@
 #include "core/settings.h"
 
 Board::Board(QObject* parent) :
-    Board(Settings::instance().getBoardSizeX(), Settings::instance().getBoardSizeY(), Settings::instance().getBombCount(), Difficulty::CUSTOM, parent) {
+    Board(Settings::instance().getBoardSizeX(), Settings::instance().getBoardSizeY(), Settings::instance().getBombCount(), Settings::instance().getDifficulty(), parent) {
 };
 
-
-Board::Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty, QObject* parent) :
+Board::Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, const Difficulty difficulty, QObject* parent) :
     boardSizeX(boardSizeX), boardSizeY(boardSizeY), bombCount(bombCount), difficulty(difficulty), QObject(parent) {
 
     //assert((boardSizeX >= 3 && boardSizeY >= 3 && boardSizeX <= 10 && boardSizeY <= 10) && "invalid boardSize detected while generating board");

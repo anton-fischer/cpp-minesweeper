@@ -14,7 +14,7 @@ class Board : public QObject
 
 public:
     explicit Board(QObject* parent = nullptr); // generate board based on current settings
-    Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty = Difficulty::CUSTOM, QObject* parent = nullptr); // generate board based on values
+    Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, const Difficulty difficulty, QObject* parent = nullptr); // generate board based on values
     ~Board() = default;
 
     // return -1 if flag removed, 0 if nothing changed, 1 if flag placed

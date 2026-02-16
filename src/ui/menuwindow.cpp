@@ -4,6 +4,8 @@
 #include <QToolButton>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QTimer>
+
 #include <memory>
 
 #include "ui/gamewindow.h"
@@ -21,6 +23,8 @@ MenuWindow::MenuWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MenuWi
 {
     ui->setupUi(this);
 
+    this->setWindowTitle("Minesweeper");
+
     levelElement = new LevelElement(this);
     ui->hbx_level->addWidget(levelElement);
 
@@ -29,6 +33,11 @@ MenuWindow::MenuWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MenuWi
     } else {
         ui->btn_save->setDisabled(true);
     }
+
+    ui->hbx_main->setStretchFactor(ui->vbx_left, 5);
+    ui->hbx_main->setStretchFactor(ui->vbx_right, 5);
+
+    showStatusBarMessage("Minesweeper v1.0", 0);
 }
 
 MenuWindow::~MenuWindow()
@@ -61,9 +70,17 @@ void MenuWindow::clearQuests() {
     }
 }
 
+void MenuWindow::showStatusBarMessage(QString message, unsigned int timeout) const {
+    statusBar()->showMessage(message, timeout);
+
+    QTimer::singleShot(timeout, this, [this]() {
+        ui->statusbar->showMessage("Minesweeper v1.0");
+    });
+}
+
 void MenuWindow::loadPlayer(Player* player) {
     // general
-    ui->lbl_currentPlayer->setText(QString::fromStdString("Currently playing as: " + player->getName()));
+    ui->gbx_player->setTitle(QString::fromStdString("Currently playing as: " + player->getName()));
 
     // stats
     ui->lcd_easyGamesWon->display(static_cast<int>(player->getAmountEasyGamesWon()));
@@ -84,14 +101,18 @@ void MenuWindow::loadPlayer(Player* player) {
     levelElement->updatePlayer(player);
 
     ui->btn_save->setDisabled(false);
+    showStatusBarMessage(QString("Successfully loaded player %1").arg(player->getName()), 5000);
 }
 
 void MenuWindow::on_btn_save_clicked()
 {
-    assert(nullptr != Settings::instance().getCurrentPlayer());
+    auto& currentPlayer = Settings::instance().getCurrentPlayer();
+    assert(nullptr != currentPlayer);
 
     FileHandler handler;
-    handler.savePlayerAsFile(Settings::instance().getCurrentPlayer().get());
+    handler.savePlayerAsFile(currentPlayer.get());
+
+    showStatusBarMessage(QString("Successfully saved player %1 at location %2").arg(currentPlayer->getName()).arg("standard path"), 5000);
 }
 
 void MenuWindow::on_btn_load_clicked()

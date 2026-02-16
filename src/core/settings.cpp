@@ -4,13 +4,25 @@
 #include <assert.h>
 
 // TODO maybe introduce enum as return value instead of bool for better exception handling
-bool Settings::setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, Difficulty difficulty) {
+bool Settings::setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount) {
     //if (boardSizeX < 3 || boardSizeY < 3 || boardSizeX > 10 || boardSizeY > 10) return false; // minimum boardSize is 3x3, maximum boardSize is 10x10
     //if (bombCount < 1 || bombCount >= boardSizeX * boardSizeY / 2) return false; // minimum bombCount is 1, maximum bombCount is boardSizeX * boardSizeY / 2
 
+    this->difficulty = Difficulty::CUSTOM;
     this->boardSizeX = boardSizeX;
     this->boardSizeY = boardSizeY;
-    this->bombCount = bombCount;
+    this->bombCount  = bombCount;
+
+    return true;
+}
+
+bool Settings::setSettings(const Difficulty difficulty) {
+    auto& difficultyData = DIFFICULTY_DATA_TABLE[static_cast<int>(difficulty)];
+
+    this->difficulty = difficulty;
+    this->boardSizeX = difficultyData.boardSizeX;
+    this->boardSizeY = difficultyData.boardSizeY;
+    this->bombCount  = difficultyData.bombCount;
 
     return true;
 }
