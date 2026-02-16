@@ -7,9 +7,9 @@
 
 unsigned int Player::playerCount = 0;
 
-Player::Player(QObject* parent) : Player("Player " + std::to_string(playerCount + 1), parent) {}
+Player::Player(QObject* parent) : Player(QString("Player %1").arg(playerCount + 1), parent) {}
 
-Player::Player(const std::string& name, QObject* parent) : name(name), QObject(parent) {
+Player::Player(const QString& name, QObject* parent) : name(name), QObject(parent) {
     ++playerCount;
 
     // generate three quests
@@ -26,7 +26,7 @@ void Player::questCompleted(Quest* quest) {
     //incrementXp(quest->getGoal()); gets already added in gamewindow
 }
 
-std::string Player::getName() const {
+QString Player::getName() const {
     return this->name;
 }
 
@@ -212,7 +212,7 @@ std::unique_ptr<Player> Player::fromJson(const nlohmann::json& j, QObject* paren
 
     // general
     assert(j.at("saveVersion") == SAVE_FILE_VERSION && "save file version missmatch detected while loading player");
-    p->name = j.at("name");
+    p->name = QString::fromStdString(j.at("name"));
 
     // progress
     p->level     = j.at("progress").at("level");
@@ -243,7 +243,7 @@ nlohmann::json Player::toJson() const {
     nlohmann::json j;
     // general
     j["saveVersion"] = SAVE_FILE_VERSION;
-    j["name"]        = this->name;
+    j["name"]        = this->name.toStdString();
 
     // progress
     j["progress"]["level"]     = this->level;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <string>
 #include <memory>
 
 #include "quest.h"
@@ -15,10 +14,10 @@ class Player : public QObject
 
 public:
     Player(QObject* parent = nullptr);
-    Player(const std::string& name, QObject* parent = nullptr);
+    Player(const QString& name, QObject* parent = nullptr);
     ~Player() = default;
 
-    std::string getName() const;
+    QString getName() const;
     std::vector<std::unique_ptr<Quest>>& getQuests();
 
     static unsigned int getPlayerCount();
@@ -67,7 +66,7 @@ private slots:
     void questCompleted(Quest* quest);
 
 private:
-    std::string name;
+    QString name;
 
     unsigned int level = 0;
     unsigned int maxXp = 100;

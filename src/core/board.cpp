@@ -222,7 +222,7 @@ std::unique_ptr<Board> Board::fromJson(const nlohmann::json& j, QObject* parent)
     // general
     assert(j.at("saveVersion") == SAVE_FILE_VERSION && "save file version missmatch detected while loading board");
 
-    b->difficulty = Settings::stringToDifficulty(j.at("difficulty"));
+    b->difficulty = Settings::stringToDifficulty(QString::fromStdString(j.at("difficulty")));
     b->boardSizeX = j.at("boardSizeX");
     b->boardSizeY = j.at("boardSizeY");
     b->bombCount  = j.at("bombCount");
@@ -254,7 +254,7 @@ nlohmann::json Board::toJson() const {
     // general
     j["saveVersion"] = SAVE_FILE_VERSION;
 
-    j["difficulty"]  = Settings::difficultyToString(this->difficulty);
+    j["difficulty"]  = Settings::difficultyToString(this->difficulty).toStdString();
     j["boardSizeX"]  = this->boardSizeX;
     j["boardSizeY"]  = this->boardSizeY;
     j["bombCount"]   = this->bombCount;

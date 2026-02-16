@@ -52,7 +52,7 @@ void Settings::setCurrentPlayer(std::unique_ptr<Player>& player) {
     this->currentPlayer = std::move(player);
 }
 
-std::string Settings::difficultyToString(const Difficulty& difficulty) {
+QString Settings::difficultyToString(const Difficulty& difficulty) {
     static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
 
     switch(difficulty) {
@@ -66,7 +66,7 @@ std::string Settings::difficultyToString(const Difficulty& difficulty) {
     return ""; // should not be reached
 }
 
-Difficulty Settings::stringToDifficulty(const std::string& string) {
+Difficulty Settings::stringToDifficulty(const QString& string) {
     static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
 
     if      (string == "EASY")   return Difficulty::EASY;

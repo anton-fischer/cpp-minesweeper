@@ -51,9 +51,9 @@ public:
     unsigned int getBoardSizeY() const;
     unsigned int getBombCount() const;
 
-    static std::string difficultyToString(const Difficulty& difficulty);
-    static Difficulty  stringToDifficulty(const std::string& string);
-    static float       getDifficultyXpMultiplier(const Difficulty& difficulty);
+    static QString    difficultyToString(const Difficulty& difficulty);
+    static Difficulty stringToDifficulty(const QString& string);
+    static float      getDifficultyXpMultiplier(const Difficulty& difficulty);
 
     // toString
     friend QDebug operator<<(QDebug dbg, const Settings& s);

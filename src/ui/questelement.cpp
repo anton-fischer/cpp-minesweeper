@@ -19,7 +19,7 @@ QuestElement::~QuestElement()
 
 void QuestElement::updateQuest()
 {
-    ui->lbl_title->setText(QString::fromStdString(quest->generateObjectiveString()));
+    ui->lbl_title->setText(quest->generateObjectiveString());
     ui->lbl_reward->setText(QString("[%1XP]").arg(quest->getReward()));
 
     static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END),  "QuestRarity enum version mismatch");

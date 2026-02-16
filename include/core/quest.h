@@ -58,7 +58,7 @@ public:
 
     void regenerateQuest();
 
-    std::string generateObjectiveString() const;
+    QString generateObjectiveString() const;
 
     QuestType   getType() const;
     QuestRarity getRarity() const;
@@ -70,11 +70,11 @@ public:
     void advanceProgress(const unsigned int newProgress);
     void setProgress(const unsigned int newProgress);
 
-    static std::string questTypeToString(const QuestType& questType);
-    static QuestType   stringToQuestType(const std::string& string);
+    static QString   questTypeToString(const QuestType& questType);
+    static QuestType stringToQuestType(const QString& string);
 
-    static std::string questRarityToString(const QuestRarity& questRarity);
-    static QuestRarity stringToQuestRarity(const std::string& string);
+    static QString     questRarityToString(const QuestRarity& questRarity);
+    static QuestRarity stringToQuestRarity(const QString& string);
 
     // persistor
     static std::unique_ptr<Quest> fromJson(const nlohmann::json& j, QObject* parent = nullptr);

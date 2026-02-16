@@ -20,7 +20,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
     static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
     ui->input_difficulty->addItems(QStringList{"EASY", "MEDIUM", "HARD", "CUSTOM"});
-    ui->input_difficulty->setCurrentText(QString::fromStdString(Settings::difficultyToString(Settings::instance().getDifficulty())));
+    ui->input_difficulty->setCurrentText(Settings::difficultyToString(Settings::instance().getDifficulty()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -32,7 +32,7 @@ void SettingsDialog::on_buttonBox_accepted()
 {
     bool validInput = false;
     if (ui->input_difficulty->currentText() == "CUSTOM") validInput = Settings::instance().setSettings(ui->input_boardSizeX->value(), ui->input_boardSizeY->value(), ui->input_bombCount->value());
-    else                                                 validInput = Settings::instance().setSettings(Settings::stringToDifficulty(ui->input_difficulty->currentText().toStdString()));
+    else                                                 validInput = Settings::instance().setSettings(Settings::stringToDifficulty(ui->input_difficulty->currentText()));
 
     if (!validInput) {
         QMessageBox::warning(this, "Invalid Input", "Please check your input");
@@ -46,7 +46,7 @@ void SettingsDialog::on_input_difficulty_currentTextChanged(const QString &text)
 {
     qDebug() << "Current difficulty:" << text;
 
-    const Difficulty& currentSelection = Settings::stringToDifficulty(text.toStdString());
+    const Difficulty& currentSelection = Settings::stringToDifficulty(text);
 
     static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
 

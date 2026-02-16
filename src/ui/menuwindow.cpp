@@ -80,7 +80,7 @@ void MenuWindow::showStatusBarMessage(QString message, unsigned int timeout) con
 
 void MenuWindow::loadPlayer(Player* player) {
     // general
-    ui->gbx_player->setTitle(QString::fromStdString("Currently playing as: " + player->getName()));
+    ui->gbx_player->setTitle("Currently playing as: " + player->getName());
 
     // stats
     ui->lcd_easyGamesWon->display(static_cast<int>(player->getAmountEasyGamesWon()));
@@ -146,7 +146,7 @@ void MenuWindow::on_btn_play_clicked()
 
         if (ok && !playerName.isEmpty()) {
             // user pressed okay and entered something
-            std::unique_ptr<Player> p = std::make_unique<Player>(playerName.toStdString());
+            std::unique_ptr<Player> p = std::make_unique<Player>(playerName);
             Settings::instance().setCurrentPlayer(p);
         } else {
             // user pressed cancel or invalid input

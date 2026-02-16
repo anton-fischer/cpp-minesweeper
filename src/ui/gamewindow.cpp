@@ -35,6 +35,8 @@ GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWi
     auto levelElement = new LevelElement(player.get(), this);
     ui->hbx_level->addWidget(levelElement);
 
+    ui->lbl_xpBonus->setStyleSheet("color: #fdb800;");
+
     ui->hbx_main->setStretchFactor(ui->vbx_left, 3);
     ui->hbx_main->setStretchFactor(ui->vbx_right, 2);
 
@@ -75,6 +77,7 @@ void GameWindow::createNewBoard(Board* newBoard) {
     showStatusBarMessage("Successfully created new board", 5000);
 
     this->setWindowTitle(QString("Minesweeper - %1").arg(Settings::difficultyToString(board->getDifficulty())));
+    ui->lbl_xpBonus->setText(QString("XP Bonus: %1x XP").arg(Settings::getDifficultyXpMultiplier(board->getDifficulty())));
 
     //this->resize(this->sizeHint()); // resize in case board size changed
 }
@@ -102,20 +105,20 @@ void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, con
     }
 }
 
-void GameWindow::appendGameLogMessageWithXp(const std::string& message, const unsigned int xp, const bool bold, const std::string color) {
+void GameWindow::appendGameLogMessageWithXp(const QString& message, const unsigned int xp, const bool bold, const unsigned int color) {
     unsigned int xpGain = xp * Settings::getDifficultyXpMultiplier(board->getDifficulty());
     Settings::instance().getCurrentPlayer()->incrementXp(xpGain);
     appendGameLogMessage(message, xpGain, bold, color);
 }
 
-void GameWindow::appendGameLogMessage(const std::string& message, const unsigned int xp, const bool bold, const std::string color) {
+void GameWindow::appendGameLogMessage(const QString& message, const unsigned int xp, const bool bold, const unsigned int color) {
     auto* widget = new QWidget(this);
     auto* layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0,0,0,0);
 
-    auto* messageLabel = new QLabel(QString::fromStdString(message), widget);
+    auto* messageLabel = new QLabel(message, widget);
     messageLabel->setMaximumHeight(20);
-    if (!color.empty()) messageLabel->setStyleSheet(QString("color: %1;").arg(color));
+    if (color != 0x000000) messageLabel->setStyleSheet(QString("color: #%1;").arg(color, 6, 16, QChar('0')).toUpper()); // value, at least 6 digits, as base 16, fill with 0
 
     if (bold) {
         QFont f = this->font();
@@ -131,7 +134,7 @@ void GameWindow::appendGameLogMessage(const std::string& message, const unsigned
 
         xpLabel->setMaximumWidth(50);
         xpLabel->setMaximumHeight(20);
-        if (!color.empty()) xpLabel->setStyleSheet(QString("color: %1;").arg(color));
+        if (color != 0x000000) xpLabel->setStyleSheet(QString("color: #%1;").arg(color, 6, 16, QChar('0')).toUpper()); // value, at least 6 digits, as base 16, fill with 0
 
         QFont f = this->font();
         f.setPointSize(10);
@@ -144,7 +147,9 @@ void GameWindow::appendGameLogMessage(const std::string& message, const unsigned
     ui->vbx_gamelog->addWidget(widget);
 
     QScrollBar* vbar = ui->scrollarea_gamelog->verticalScrollBar();
-    vbar->setValue(vbar->maximum());
+    QTimer::singleShot(100, this, [vbar]() { // without break scrollbar will not scroll to bottom because of dynamically inserted widget
+        vbar->setValue(vbar->maximum());
+    });
 }
 
 void GameWindow::showStatusBarMessage(QString message, unsigned int timeout) const {
@@ -211,6 +216,7 @@ void GameWindow::boardUpdated() {
 
     ui->progressBar_progress->setMaximum(sizeX * sizeY);
     ui->lcd_flagCount->display(static_cast<int>(board->getFlagCount()));
+    ui->lcd_currentScore->display(0);
     ui->btn_status->setText("😊");
 
     boardGridTiles.clear();
@@ -251,7 +257,7 @@ void GameWindow::bombHit() {
     player->incrementAmountGamesPlayed(1);
 
     // xp and log message
-    appendGameLogMessageWithXp("GAME OVER: Bomb hit!", 50, true, "#d80000");
+    appendGameLogMessageWithXp("GAME OVER: Bomb hit!", 50, true, 0xd80000);
 
     EndDialog dialog(player.get(), false, this);
     dialog.exec();
@@ -278,7 +284,7 @@ void GameWindow::gameWon() {
     player->incrementAmountGamesPlayed(1);
 
     // xp and log message
-    appendGameLogMessageWithXp("GAME OVER: You win!", 200, true, "#00d840");
+    appendGameLogMessageWithXp("GAME OVER: You win!", 200, true, 0x00d840);
 
     EndDialog dialog(player.get(), true, this);
     dialog.exec();
@@ -289,13 +295,13 @@ void GameWindow::gameWon() {
 void GameWindow::playerLevelUp() {
     auto& player = Settings::instance().getCurrentPlayer();
 
-    appendGameLogMessage("LEVEL UP: " + std::to_string(player->getLevel() - 1) + "->" + std::to_string(player->getLevel()), 0, true, "#fdb800");
-    appendGameLogMessage("> XP for next level up: " + std::to_string(player->getMaxXp()) + "XP", 0, false, "#fdb800");
+    appendGameLogMessage(QString("LEVEL UP: %1->%2").arg(player->getLevel() - 1).arg(player->getLevel()), 0, true, 0xfdb800);
+    appendGameLogMessage(QString("> XP for next level up: %1XP").arg(player->getMaxXp()), 0, false, 0xfdb800);
 }
 
 void GameWindow::questCompleted(Quest* quest) {
-    appendGameLogMessageWithXp("QUEST COMPLETED", quest->getReward(), true, "#fdb800");
-    appendGameLogMessage(">" + quest->generateObjectiveString(), 0, false, "#fdb800");
+    appendGameLogMessageWithXp("QUEST COMPLETED", quest->getReward(), true, 0xfdb800);
+    appendGameLogMessage(">" + quest->generateObjectiveString(), 0, false, 0xfdb800);
 }
 
 void GameWindow::on_btn_exit_clicked()
@@ -309,7 +315,7 @@ void GameWindow::on_btn_save_clicked()
 
     FileHandler handler;
     handler.saveBoardAsFile(board);
-    appendGameLogMessage("Successfully saved current game", 0, true, "#00d840");
+    appendGameLogMessage("Successfully saved current game", 0, true, 0x00d840);
 
     showStatusBarMessage(QString("Successfully saved board at location %1").arg("standard path"), 5000);
 }
@@ -327,7 +333,7 @@ void GameWindow::on_btn_load_clicked()
     assert(valid == true); // must be true, otherwise corrupted savefile
 
     createNewBoard(board);
-    appendGameLogMessage("Successfully loaded game", 0, true, "#00d840");
+    appendGameLogMessage("Successfully loaded game", 0, true, 0x00d840);
 
     showStatusBarMessage(QString("Successfully laoded board"), 5000);
 }
