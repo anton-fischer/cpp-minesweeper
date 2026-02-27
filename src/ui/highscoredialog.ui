@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EndDialog</class>
- <widget class="QDialog" name="EndDialog">
+ <class>HighscoreDialog</class>
+ <widget class="QDialog" name="HighscoreDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>559</width>
     <height>300</height>
    </rect>
   </property>
@@ -23,20 +23,7 @@
       </font>
      </property>
      <property name="text">
-      <string>GAME WON</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="lbl_subtitle">
-     <property name="layoutDirection">
-      <enum>Qt::LayoutDirection::LeftToRight</enum>
-     </property>
-     <property name="text">
-      <string>All bombs cleared!</string>
+      <string>HIGHSCORES</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -51,14 +38,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="hbx_level">
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-    </layout>
-   </item>
-   <item>
-    <widget class="QScrollArea" name="scrollarea_quests">
+    <widget class="QScrollArea" name="scrollarea_highscores">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -80,13 +60,13 @@
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="scrollarea_quests_widget">
+     <widget class="QWidget" name="scrollarea_highscores_widget">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>380</width>
-        <height>141</height>
+        <width>539</width>
+        <height>209</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -106,7 +86,7 @@
         <number>5</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" name="vbx_quests">
+        <layout class="QVBoxLayout" name="vbx_highscores">
          <property name="spacing">
           <number>5</number>
          </property>
@@ -117,39 +97,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="cbx_saveScore">
+    <widget class="QPushButton" name="btn_exit">
      <property name="text">
-      <string>Save Highscore</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
+      <string>Back</string>
      </property>
     </widget>
-   </item>
-   <item>
-    <widget class="Line" name="line_2">
-     <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="hbx_buttons">
-     <item>
-      <widget class="QPushButton" name="btn_finish">
-       <property name="text">
-        <string>Finish</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_replay">
-       <property name="text">
-        <string>Replay</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
   </layout>
  </widget>

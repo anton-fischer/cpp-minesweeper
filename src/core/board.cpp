@@ -7,6 +7,8 @@
 #include <algorithm>
 #include "core/settings.h"
 
+#include <core/highscore.h>
+
 Board::Board(QObject* parent) :
     Board(Settings::instance().getBoardSizeX(), Settings::instance().getBoardSizeY(), Settings::instance().getBombCount(), Settings::instance().getDifficulty(), parent) {
 };
@@ -50,8 +52,13 @@ void Board::generateBombs(const unsigned int startX, const unsigned int startY) 
     }
 
     // shuffle
-    std::random_device seed;
-    std::mt19937 generator(seed());
+    std::random_device seeder;
+    this->startSeed = seeder();
+
+    // read from savefile if replay
+    // TODO implement this case
+
+    std::mt19937 generator(startSeed);
     std::shuffle(positions.begin(), positions.end(), generator);
 
     // place bombs on first N positions
@@ -216,21 +223,28 @@ unsigned int Board::getFlagCount() const {
     return this->flagCount;
 }
 
+std::unique_ptr<Board> Board::fromHighscore(const Highscore highscore, QObject* parent) {
+    std::unique_ptr<Board> b = std::make_unique<Board>();
+
+    return b;
+}
+
 std::unique_ptr<Board> Board::fromJson(const nlohmann::json& j, QObject* parent) {
     std::unique_ptr<Board> b = std::make_unique<Board>();
 
     // general
     assert(j.at("saveVersion") == SAVE_FILE_VERSION && "save file version missmatch detected while loading board");
 
-    b->difficulty = Settings::stringToDifficulty(QString::fromStdString(j.at("difficulty")));
-    b->boardSizeX = j.at("boardSizeX");
-    b->boardSizeY = j.at("boardSizeY");
-    b->bombCount  = j.at("bombCount");
+    b->difficulty = Settings::stringToDifficulty(QString::fromStdString(j.at("general").at("difficulty")));
+    b->boardSizeX = j.at("general").at("boardSizeX");
+    b->boardSizeY = j.at("general").at("boardSizeY");
+    b->bombCount  = j.at("general").at("bombCount");
 
-    b->progress   = j.at("progress");
-    b->flagCount  = j.at("flagCount");
+    b->progress   = j.at("general").at("progress");
+    b->flagCount  = j.at("general").at("flagCount");
 
     // board
+    b->startSeed  = j.at("startSeed");
     b->board.clear();
     b->board.resize(b->boardSizeY);
 
@@ -254,16 +268,17 @@ nlohmann::json Board::toJson() const {
     // general
     j["saveVersion"] = SAVE_FILE_VERSION;
 
-    j["difficulty"]  = Settings::difficultyToString(this->difficulty).toStdString();
-    j["boardSizeX"]  = this->boardSizeX;
-    j["boardSizeY"]  = this->boardSizeY;
-    j["bombCount"]   = this->bombCount;
+    j["general"]["difficulty"]  = Settings::difficultyToString(this->difficulty).toStdString();
+    j["general"]["boardSizeX"]  = this->boardSizeX;
+    j["general"]["boardSizeY"]  = this->boardSizeY;
+    j["general"]["bombCount"]   = this->bombCount;
 
-    j["progress"]    = this->progress;
-    j["flagCount"]   = this->flagCount;
+    j["general"]["progress"]    = this->progress;
+    j["general"]["flagCount"]   = this->flagCount;
 
     // board
-    j["board"] = nlohmann::json::array();
+    j["startSeed"]   = this->startSeed;
+    j["board"]       = nlohmann::json::array();
     for (const auto& row : board)
     {
         nlohmann::json rowJson = nlohmann::json::array();

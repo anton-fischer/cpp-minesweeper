@@ -17,9 +17,9 @@ public:
     FileHandler();
     ~FileHandler() = default;
 
-    void saveBoardAsFile(Board* board, std::string filepath = "./boardSave.json");
-    void savePlayerAsFile(Player* player, std::string filepath = "./playerSave.json");
+    void saveBoardAsFile(Board* board, std::string filepath);
+    void savePlayerAsFile(Player* player, std::string filepath);
 
-    std::unique_ptr<Board>  createBoardFromFile(std::string filepath = "./boardSave.json");
-    std::unique_ptr<Player> createPlayerFromFile(std::string filepath = "./playerSave.json");
+    std::unique_ptr<Board>  createBoardFromFile(std::string filepath);
+    std::unique_ptr<Player> createPlayerFromFile(std::string filepath);
 };

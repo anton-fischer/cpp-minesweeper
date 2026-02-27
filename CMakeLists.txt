@@ -31,6 +31,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         include/core/settings.h src/core/settings.cpp
         include/core/player.h src/core/player.cpp
         include/core/quest.h src/core/quest.cpp
+        include/core/highscore.h src/core/highscore.cpp
         include/ui/tilebutton.h src/ui/tilebutton.cpp
         include/utils/filehandler.h src/utils/filehandler.cpp
         include/ui/settingsDialog.h src/ui/settingsDialog.cpp src/ui/settingsDialog.ui
@@ -38,6 +39,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         include/ui/enddialog.h src/ui/enddialog.cpp src/ui/enddialog.ui
         include/ui/questelement.h src/ui/questelement.cpp src/ui/questElement.ui
         include/ui/levelelement.h src/ui/levelelement.cpp src/ui/levelElement.ui
+        include/ui/highscoredialog.h src/ui/highscoredialog.cpp src/ui/highscoredialog.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET minesweeper APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

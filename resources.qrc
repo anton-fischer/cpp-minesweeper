@@ -2,4 +2,8 @@
     <qresource prefix="/images">
         <file>resources/icons8-minesweeper-96.png</file>
     </qresource>
+    <qresource prefix="/styles">
+        <file>resources/darkstyle.qss</file>
+        <file>resources/lightstyle.qss</file>
+    </qresource>
 </RCC>

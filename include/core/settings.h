@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
 #include <memory>
 
 #include "core/player.h"
+#include "core/highscore.h"
 
 #define DIFFICULTY_ENUM_GUARD 4
 enum class Difficulty {
@@ -45,6 +45,9 @@ public:
     std::unique_ptr<Player>& getCurrentPlayer();
     void setCurrentPlayer(std::unique_ptr<Player>& player);
 
+    std::vector<Highscore> getHighscores() const;
+    void addHighscore(Highscore& highscore);
+
     Difficulty getDifficulty() const;
 
     unsigned int getBoardSizeX() const;
@@ -66,6 +69,8 @@ private:
     // forbid copying
     Settings(const Settings&) = delete;
     Settings& operator=(const Settings&) = delete;
+
+    std::vector<Highscore> highscores;
 
     std::unique_ptr<Player> currentPlayer = nullptr;
 

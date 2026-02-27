@@ -5,11 +5,13 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QTimer>
+#include <QFileDialog>
 
 #include <memory>
 
 #include "ui/gamewindow.h"
 #include "ui/settingsdialog.h"
+#include "ui/highscoredialog.h"
 #include "ui/questelement.h"
 #include "ui/levelelement.h"
 
@@ -32,6 +34,10 @@ MenuWindow::MenuWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MenuWi
         loadPlayer(currentPlayer.get());
     } else {
         ui->btn_save->setDisabled(true);
+        ui->lbl_noPlayerQuests->setVisible(true);
+        ui->lbl_noPlayerStatistics->setVisible(true);
+        ui->scrollarea_quests->setVisible(false);
+        ui->scrollarea_statistics->setVisible(false);
     }
 
     ui->hbx_main->setStretchFactor(ui->vbx_left, 5);
@@ -53,11 +59,11 @@ void MenuWindow::closeEvent(QCloseEvent* event)
 
 void MenuWindow::appendQuest(Quest* quest) {
     auto newQuest = new QuestElement(quest, this);
-    ui->quests_container->addWidget(newQuest);
+    ui->vbx_quests->addWidget(newQuest);
 }
 
 void MenuWindow::clearQuests() {
-    QLayout* layout = ui->quests_container;
+    QLayout* layout = ui->vbx_quests;
 
     while (layout->count() > 0) {
         QLayoutItem* item = layout->takeAt(0);
@@ -101,6 +107,10 @@ void MenuWindow::loadPlayer(Player* player) {
     levelElement->updatePlayer(player);
 
     ui->btn_save->setDisabled(false);
+    ui->lbl_noPlayerQuests->setVisible(false);
+    ui->lbl_noPlayerStatistics->setVisible(false);
+    ui->scrollarea_quests->setVisible(true);
+    ui->scrollarea_statistics->setVisible(true);
     showStatusBarMessage(QString("Successfully loaded player %1").arg(player->getName()), 5000);
 }
 
@@ -109,20 +119,48 @@ void MenuWindow::on_btn_save_clicked()
     auto& currentPlayer = Settings::instance().getCurrentPlayer();
     assert(nullptr != currentPlayer);
 
-    FileHandler handler;
-    handler.savePlayerAsFile(currentPlayer.get());
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        tr("Save player"),
+        QString(),
+        tr("JSON files (*.json)") // tr in case for possible translation later
+    );
 
-    showStatusBarMessage(QString("Successfully saved player %1 at location %2").arg(currentPlayer->getName()).arg("standard path"), 5000);
+    if (!filePath.isEmpty()) {
+        FileHandler handler;
+        handler.savePlayerAsFile(currentPlayer.get(), filePath.toStdString());
+
+        showStatusBarMessage(QString("Successfully saved player %1 at location %2").arg(currentPlayer->getName(), filePath), 5000);
+    } else {
+        qDebug() << "Invalid path given when select location to save file";
+    }
+
+
 }
 
 void MenuWindow::on_btn_load_clicked()
-{
-    FileHandler handler;
-    auto player = handler.createPlayerFromFile();
+{   
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        tr("Load player"),
+        QString(),
+        tr("JSON files (*.json)")
+    );
 
-    Settings::instance().setCurrentPlayer(player);
+    if (!filePath.isEmpty()) {
+        if (!filePath.endsWith(".json")) filePath += ".json";
 
-    loadPlayer(Settings::instance().getCurrentPlayer().get());
+        FileHandler handler;
+        auto player = handler.createPlayerFromFile(filePath.toStdString());
+
+        Settings::instance().setCurrentPlayer(player);
+
+        loadPlayer(Settings::instance().getCurrentPlayer().get());
+
+        showStatusBarMessage(QString("Successfully laoded player"), 5000);
+    } else {
+        qDebug() << "Invalid path given when select savefile to load";
+    }
 }
 
 void MenuWindow::on_btn_exit_clicked()
@@ -162,5 +200,11 @@ void MenuWindow::on_btn_play_clicked()
 void MenuWindow::on_btn_configure_clicked()
 {
     SettingsDialog dialog(this);
+    dialog.exec();
+}
+
+void MenuWindow::on_btn_highscores_clicked()
+{
+    HighscoreDialog dialog(this);
     dialog.exec();
 }

@@ -6,6 +6,8 @@
 #include "Tile.h"
 #include "core/settings.h"
 
+class Highscore;
+
 #define SAVE_FILE_VERSION 1
 
 class Board : public QObject
@@ -35,6 +37,8 @@ public:
 
     unsigned int getProgress() const;
     unsigned int getFlagCount() const;
+
+    static std::unique_ptr<Board> fromHighscore(const Highscore highscore, QObject* parent = nullptr);
 
     // persistor
     static std::unique_ptr<Board> fromJson(const nlohmann::json& j, QObject* parent = nullptr);
@@ -69,5 +73,6 @@ private:
     void handleBombHit(const unsigned int x, const unsigned int y);
     void handleGameWon(const unsigned int x, const unsigned int y);
 
+    unsigned int startSeed = 0;
     std::vector<std::vector<Tile>> board;
 };

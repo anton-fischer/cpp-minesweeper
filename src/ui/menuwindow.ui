@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="hbx_main">
       <item>
@@ -66,6 +66,13 @@
          <widget class="Line" name="line_3">
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_highscores">
+          <property name="text">
+           <string>Highscores</string>
           </property>
          </widget>
         </item>
@@ -158,6 +165,19 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item>
+            <widget class="QLabel" name="lbl_noPlayerStatistics">
+             <property name="styleSheet">
+              <string notr="true">color:grey;</string>
+             </property>
+             <property name="text">
+              <string>No player loaded</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QScrollArea" name="scrollarea_statistics">
              <property name="sizePolicy">
@@ -287,6 +307,19 @@
             <number>0</number>
            </property>
            <item>
+            <widget class="QLabel" name="lbl_noPlayerQuests">
+             <property name="styleSheet">
+              <string notr="true">color:grey;</string>
+             </property>
+             <property name="text">
+              <string>No player loaded</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QScrollArea" name="scrollarea_quests">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -335,7 +368,7 @@
                 <number>5</number>
                </property>
                <item>
-                <layout class="QVBoxLayout" name="quests_container">
+                <layout class="QVBoxLayout" name="vbx_quests">
                  <property name="spacing">
                   <number>5</number>
                  </property>

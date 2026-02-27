@@ -27,6 +27,14 @@ bool Settings::setSettings(const Difficulty difficulty) {
     return true;
 }
 
+std::vector<Highscore> Settings::getHighscores() const {
+    return this->highscores;
+}
+
+void Settings::addHighscore(Highscore& highscore) {
+    this->highscores.push_back(highscore);
+}
+
 unsigned int Settings::getBoardSizeX() const {
     return this->boardSizeX;
 }

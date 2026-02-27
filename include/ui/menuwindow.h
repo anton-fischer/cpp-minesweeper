@@ -27,6 +27,8 @@ private slots:
     void on_btn_configure_clicked();
     void on_btn_play_clicked();
 
+    void on_btn_highscores_clicked();
+
 private:
     Ui::MenuWindow *ui;
 

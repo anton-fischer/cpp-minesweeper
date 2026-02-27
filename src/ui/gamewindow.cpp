@@ -6,6 +6,7 @@
 #include <QScrollBar>
 #include <QSizePolicy>
 #include <QTimer>
+#include <QFileDialog>
 
 #include "ui/settingsDialog.h"
 #include "ui/enddialog.h"
@@ -313,27 +314,51 @@ void GameWindow::on_btn_save_clicked()
 {
     assert(nullptr != board);
 
-    FileHandler handler;
-    handler.saveBoardAsFile(board);
-    appendGameLogMessage("Successfully saved current game", 0, true, 0x00d840);
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        tr("Save board"),
+        QString(),
+        tr("JSON files (*.json)") // tr in case for possible translation later
+    );
 
-    showStatusBarMessage(QString("Successfully saved board at location %1").arg("standard path"), 5000);
+    if (!filePath.isEmpty()) {
+        FileHandler handler;
+        handler.saveBoardAsFile(board, filePath.toStdString());
+        appendGameLogMessage("Successfully saved current game", 0, true, 0x00d840);
+
+        showStatusBarMessage(QString("Successfully saved board at location %1").arg(filePath), 5000);
+    } else {
+        qDebug() << "Invalid path given when select location to save file";
+    }
 }
 
 void GameWindow::on_btn_load_clicked()
 {
-    FileHandler handler;
-    std::unique_ptr<Board> tmp = handler.createBoardFromFile();
-    board = tmp.release();
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        tr("Load board"),
+        QString(),
+        tr("JSON files (*.json)")
+    );
 
-    bool valid = false;
-    if (board->getDifficulty() == Difficulty::CUSTOM) valid = Settings::instance().setSettings(board->getBoardSizeX(), board->getBoardSizeY(), board->getBombCount());
-    else                                              valid = Settings::instance().setSettings(board->getDifficulty());
+    if (!filePath.isEmpty()) {
+        if (!filePath.endsWith(".json")) filePath += ".json";
 
-    assert(valid == true); // must be true, otherwise corrupted savefile
+        FileHandler handler;
+        std::unique_ptr<Board> tmp = handler.createBoardFromFile(filePath.toStdString());
+        board = tmp.release();
 
-    createNewBoard(board);
-    appendGameLogMessage("Successfully loaded game", 0, true, 0x00d840);
+        bool valid = false;
+        if (board->getDifficulty() == Difficulty::CUSTOM) valid = Settings::instance().setSettings(board->getBoardSizeX(), board->getBoardSizeY(), board->getBombCount());
+        else                                              valid = Settings::instance().setSettings(board->getDifficulty());
 
-    showStatusBarMessage(QString("Successfully laoded board"), 5000);
+        assert(valid == true); // must be true, otherwise corrupted savefile
+
+        createNewBoard(board);
+        appendGameLogMessage("Successfully loaded game", 0, true, 0x00d840);
+
+        showStatusBarMessage(QString("Successfully loaded board"), 5000);
+    } else {
+        qDebug() << "Invalid path given when select savefile to load";
+    }
 }

@@ -45,7 +45,7 @@ EndDialog::EndDialog(Player* player, bool gameWon, QWidget *parent) : player(pla
 
 void EndDialog::appendQuest(Quest* quest) {
     auto newQuest = new QuestElement(quest, this);
-    ui->quests_container->addWidget(newQuest);
+    ui->vbx_quests->addWidget(newQuest);
 }
 
 EndDialog::~EndDialog()
@@ -57,6 +57,11 @@ void EndDialog::on_btn_finish_clicked()
 {
     if (auto parent = parentWidget()) {
         parent->close();
+
+        if (ui->cbx_saveScore->isChecked()) {
+            Highscore score;
+            Settings::instance().addHighscore(score);
+        }
     }
     close();
 }
