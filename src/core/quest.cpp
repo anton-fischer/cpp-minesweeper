@@ -30,7 +30,7 @@ void Quest::generateQuest() {
 QString Quest::generateObjectiveString() const {
     std::ostringstream returnString;
 
-    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END),  "QuestType enum version mismatch");
+    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END), "QuestType enum version mismatch");
     switch(type) {
         case QuestType::PLAY_GAMES: returnString << "Play " << goal << " Games"; break;
         case QuestType::WIN_GAMES: returnString << "Win " << goal << " Games"; break;
@@ -99,7 +99,7 @@ void Quest::setProgress(const unsigned int newProgress) {
 }
 
 QString Quest::questTypeToString(const QuestType& questType) {
-    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END),  "QuestType enum version mismatch");
+    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END), "QuestType enum version mismatch");
 
     switch(questType) {
         case (QuestType::PLAY_GAMES):    return "PLAY GAMES";
@@ -113,7 +113,7 @@ QString Quest::questTypeToString(const QuestType& questType) {
 }
 
 QuestType Quest::stringToQuestType(const QString& string) {
-    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END),  "QuestType enum version mismatch");
+    static_assert(QUEST_TYPE_ENUM_GUARD == static_cast<int>(QuestType::_END), "QuestType enum version mismatch");
 
     if      (string == "PLAY GAMES")    return QuestType::PLAY_GAMES;
     else if (string == "WIN GAMES")     return QuestType::WIN_GAMES;
@@ -125,7 +125,7 @@ QuestType Quest::stringToQuestType(const QString& string) {
 }
 
 QString Quest::questRarityToString(const QuestRarity& questRarity) {
-    static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END),  "QuestRarity enum version mismatch");
+    static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END), "QuestRarity enum version mismatch");
 
     switch(questRarity) {
     case (QuestRarity::COMMON):    return "COMMON";
@@ -139,7 +139,7 @@ QString Quest::questRarityToString(const QuestRarity& questRarity) {
 }
 
 QuestRarity Quest::stringToQuestRarity(const QString& string) {
-    static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END),  "QuestRarity enum version mismatch");
+    static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END),"QuestRarity enum version mismatch");
 
     if      (string == "COMMON")    return QuestRarity::COMMON;
     else if (string == "RARE")      return QuestRarity::RARE;

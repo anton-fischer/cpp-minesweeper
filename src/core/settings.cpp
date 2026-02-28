@@ -3,6 +3,27 @@
 #include <QDebug>
 #include <assert.h>
 
+#include <utils/filehandler.h>
+
+Settings& Settings::instance() {
+    static Settings instance;
+
+    if (!instance.getIsInitialized()) {
+        instance.setIsInitialized(true);
+
+        FileHandler handler;
+        bool success = handler.loadSettings();
+
+        if (success) {
+            qDebug() << "Successfully restored Settings from save file";
+        } else {
+            qDebug() << "Could not restore settings from save file, using default settings instead";
+        }
+    }
+
+    return instance;
+}
+
 // TODO maybe introduce enum as return value instead of bool for better exception handling
 bool Settings::setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount) {
     //if (boardSizeX < 3 || boardSizeY < 3 || boardSizeX > 10 || boardSizeY > 10) return false; // minimum boardSize is 3x3, maximum boardSize is 10x10
@@ -27,7 +48,15 @@ bool Settings::setSettings(const Difficulty difficulty) {
     return true;
 }
 
-std::vector<Highscore> Settings::getHighscores() const {
+bool Settings::getIsInitialized() const {
+    return this->isInitialized;
+}
+
+void Settings::setIsInitialized(bool isInitialized) {
+    this->isInitialized = isInitialized;
+}
+
+std::vector<Highscore>& Settings::getHighscores() {
     return this->highscores;
 }
 
@@ -61,7 +90,7 @@ void Settings::setCurrentPlayer(std::unique_ptr<Player> player) {
 }
 
 QString Settings::difficultyToString(const Difficulty& difficulty) {
-    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
+    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END), "Difficulty enum version mismatch");
 
     switch(difficulty) {
         case (Difficulty::EASY):   return "EASY";
@@ -75,7 +104,7 @@ QString Settings::difficultyToString(const Difficulty& difficulty) {
 }
 
 Difficulty Settings::stringToDifficulty(const QString& string) {
-    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
+    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END), "Difficulty enum version mismatch");
 
     if      (string == "EASY")   return Difficulty::EASY;
     else if (string == "MEDIUM") return Difficulty::MEDIUM;
@@ -87,7 +116,7 @@ Difficulty Settings::stringToDifficulty(const QString& string) {
 }
 
 float Settings::getDifficultyXpMultiplier(const Difficulty& difficulty) {
-    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
+    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END), "Difficulty enum version mismatch");
 
     switch(difficulty) {
         case (Difficulty::EASY):   return 1;
@@ -98,6 +127,51 @@ float Settings::getDifficultyXpMultiplier(const Difficulty& difficulty) {
     }
 
     return 0; // should not be reached
+}
+
+void Settings::fromJson(const nlohmann::json& j) {
+    // general
+    assert(j.at("saveVersion") == SAVE_FILE_VERSION && "save file version missmatch detected while loading settings");
+
+    const Difficulty difficulty = Settings::stringToDifficulty(QString::fromStdString(j.at("general").at("difficulty")));
+    const unsigned int boardSizeX = j.at("general").at("boardSizeX");
+    const unsigned int boardSizeY = j.at("general").at("boardSizeY");
+    const unsigned int bombCount  = j.at("general").at("bombCount");
+
+    if (difficulty == Difficulty::CUSTOM) {
+        Settings::instance().setSettings(boardSizeX, boardSizeY, bombCount);
+    } else {
+        Settings::instance().setSettings(difficulty);
+    }
+
+    // highscores
+    if (j.contains("highscores") && j["highscores"].is_array()) {
+        Settings::instance().getHighscores().clear();
+        for (auto& jh : j["highscores"]) {
+            auto highscore = Highscore::fromJson(jh);
+            Settings::instance().addHighscore(*highscore);
+        }
+    }
+}
+
+nlohmann::json Settings::toJson() const {
+    nlohmann::json j;
+
+    // general
+    j["saveVersion"] = SAVE_FILE_VERSION;
+
+    j["general"]["difficulty"]  = Settings::difficultyToString(this->difficulty).toStdString();
+    j["general"]["boardSizeX"]  = this->boardSizeX;
+    j["general"]["boardSizeY"]  = this->boardSizeY;
+    j["general"]["bombCount"]   = this->bombCount;
+
+    // highscores
+    for (auto& highscore : Settings::instance().getHighscores()) {
+        auto jh = highscore.toJson();
+        j["highscores"].push_back(std::move(jh));
+    }
+
+    return j;
 }
 
 QDebug operator<<(QDebug dbg, const Settings& s) {

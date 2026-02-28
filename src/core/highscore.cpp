@@ -10,7 +10,8 @@ Highscore::Highscore(Player* player, Board* board, unsigned int score) {
     this->boardSizeY = board->getBoardSizeY();
     this->bombCount  = board->getBombCount();
 
-    this->score = score;
+    this->score      = score;
+    this->startSeed  = board->getStartSeed();
 }
 
 QString Highscore::getName() const {
@@ -45,7 +46,9 @@ std::unique_ptr<Highscore> Highscore::fromJson(const nlohmann::json& j) {
     h->boardSizeX = j.at("boardSizeX");
     h->boardSizeY = j.at("boardSizeY");
     h->bombCount  = j.at("bombCount");
+
     h->score      = j.at("score");
+    h->startSeed  = j.at("startSeed");
 
     return h;
 }
@@ -58,11 +61,13 @@ nlohmann::json Highscore::toJson() const {
     h["boardSizeX"] = boardSizeX;
     h["boardSizeY"] = boardSizeY;
     h["bombCount"]  = bombCount;
+
     h["score"]      = score;
+    h["startSeed"]  = startSeed;
 
     return h;
 }
 
 QDebug operator<<(QDebug dbg, const Highscore& t) {
-    return dbg << "name[" << t.name << "] boardSizeX[" << t.boardSizeX << "] boardSizeY[" << t.boardSizeY << "] bombCount[" << t.bombCount << "] score[" << t.score << "]";
+    return dbg << "name[" << t.name << "] boardSizeX[" << t.boardSizeX << "] boardSizeY[" << t.boardSizeY << "] bombCount[" << t.bombCount << "] score[" << t.score << "] startSeed[" << t.startSeed << "]";
 }

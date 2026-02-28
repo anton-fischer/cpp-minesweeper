@@ -98,7 +98,7 @@ void Board::generateTileNumbers() {
 }
 
 int Board::placeFlag(const unsigned int x, const unsigned int y) {
-    if (board[y][x].getIsFlag()) {
+    if (board[y][x].getIsFlag()) { // remove flag
         board[y][x].setIsFlag(false);
         progress--;
         flagCount++;
@@ -106,17 +106,17 @@ int Board::placeFlag(const unsigned int x, const unsigned int y) {
         return -1;
     } else if (flagCount == 0) { // in this case cancel, as no new flag can be placed
         return 0;
-    } else {
+    } else { // place flag
         board[y][x].setIsFlag(true);
         progress++;
         flagCount--;
-        emit tileUpdated(x, y);
-        return 1;
-    }
-
-    if (progress >= boardSizeX * boardSizeY) {
-        handleGameWon(x, y);
-        return 0;
+        if (progress >= boardSizeX * boardSizeY) {
+            handleGameWon(x, y);
+            return 0;
+        } else {
+            emit tileUpdated(x, y);
+            return 1;
+        }
     }
 }
 
@@ -172,6 +172,7 @@ unsigned int Board::revealAllTiles() {
 }
 
 void Board::handleBombHit(const unsigned int x, const unsigned int y) {
+    assert(flagCount > 0 && progress != boardSizeX * boardSizeY);
     qDebug() << "Bomb hit detected";
 
     emit tileUpdated(x, y);
@@ -182,6 +183,7 @@ void Board::handleBombHit(const unsigned int x, const unsigned int y) {
 }
 
 void Board::handleGameWon(const unsigned int x, const unsigned int y) {
+    assert(flagCount == 0 && progress == boardSizeX * boardSizeY);
     qDebug() << "Game won detected";
 
     emit tileUpdated(x, y);
@@ -221,6 +223,10 @@ unsigned int Board::getProgress() const {
 
 unsigned int Board::getFlagCount() const {
     return this->flagCount;
+}
+
+unsigned int Board::getStartSeed() const {
+    return this->startSeed;
 }
 
 std::unique_ptr<Board> Board::fromHighscore(const Highscore highscore, QObject* parent) {

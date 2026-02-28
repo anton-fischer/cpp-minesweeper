@@ -58,6 +58,15 @@ MenuWindow::~MenuWindow()
 
 void MenuWindow::closeEvent(QCloseEvent* event)
 {
+    // try to backup settings
+    FileHandler handler;
+    bool success = handler.saveSettings();
+    if (success) {
+        qDebug() << "Successfully saved settings";
+    } else {
+        qDebug() << "Could not save settings";
+    }
+
     if (isSaveFileSaved) {
         qDebug() << "MenuWindow was closed, savefile was already saved";
         event->accept();
@@ -196,14 +205,19 @@ bool MenuWindow::savePlayer() {
 
     if (!filePath.isEmpty()) {
         FileHandler handler;
-        handler.savePlayerAsFile(Settings::instance().getCurrentPlayer().get(), filePath.toStdString());
+        bool success = handler.savePlayerAsFile(Settings::instance().getCurrentPlayer().get(), filePath.toStdString());
 
-        this->isSaveFileSaved = true;
-        // disabled because a player should always be able to save additional copies of the savefile
-        //ui->btn_save->setDisabled(this->isSaveFileSaved);
+        if (success) {
+            this->isSaveFileSaved = true;
+            // disabled because a player should always be able to save additional copies of the savefile
+            //ui->btn_save->setDisabled(this->isSaveFileSaved);
 
-        qDebug() << QString("Successfully saved player %1 at location %2").arg(Settings::instance().getCurrentPlayer()->getName(), filePath);
-        return true;
+            qDebug() << QString("Successfully saved player %1 at location %2").arg(Settings::instance().getCurrentPlayer()->getName(), filePath);
+            return true;
+        } else {
+            qDebug() << QString("Error while saving player %1 at location %2").arg(Settings::instance().getCurrentPlayer()->getName(), filePath);
+            return false;
+        }
     } else {
         qDebug() << "Invalid path given when select location to save file";
     }
@@ -259,6 +273,7 @@ void MenuWindow::on_btn_play_clicked()
         }
     }
 
+    this->isSaveFileSaved = true; // to prevent file save dialog from showing up when leaving menu
     GameWindow* window = new GameWindow();
     window->show();
     this->close();

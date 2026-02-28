@@ -18,7 +18,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
         // TODO
     });
 
-    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
+    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END), "Difficulty enum version mismatch");
     ui->input_difficulty->addItems(QStringList{"EASY", "MEDIUM", "HARD", "CUSTOM"});
     ui->input_difficulty->setCurrentText(Settings::difficultyToString(Settings::instance().getDifficulty()));
 }
@@ -48,17 +48,20 @@ void SettingsDialog::on_input_difficulty_currentTextChanged(const QString &text)
 
     const Difficulty& currentSelection = Settings::stringToDifficulty(text);
 
-    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
-
     ui->input_boardSizeX->setDisabled(currentSelection != Difficulty::CUSTOM);
     ui->input_boardSizeY->setDisabled(currentSelection != Difficulty::CUSTOM);
     ui->input_bombCount->setDisabled(currentSelection != Difficulty::CUSTOM);
 
-    auto& difficultyData = DIFFICULTY_DATA_TABLE[static_cast<int>(currentSelection)];
-    ui->input_boardSizeX->setValue(difficultyData.boardSizeX);
-    ui->input_boardSizeY->setValue(difficultyData.boardSizeY);
-    ui->input_bombCount->setValue(difficultyData.bombCount);
-
+    if (currentSelection == Difficulty::CUSTOM) {
+        ui->input_boardSizeX->setValue(Settings::instance().getBoardSizeX());
+        ui->input_boardSizeY->setValue(Settings::instance().getBoardSizeY());
+        ui->input_bombCount->setValue(Settings::instance().getBombCount());
+    } else {
+        auto& difficultyData = DIFFICULTY_DATA_TABLE[static_cast<int>(currentSelection)];
+        ui->input_boardSizeX->setValue(difficultyData.boardSizeX);
+        ui->input_boardSizeY->setValue(difficultyData.boardSizeY);
+        ui->input_bombCount->setValue(difficultyData.bombCount);
+    }
 }
 
 bool SettingsDialog::getSuccess() const {

@@ -38,6 +38,8 @@ public:
     unsigned int getProgress() const;
     unsigned int getFlagCount() const;
 
+    unsigned int getStartSeed() const;
+
     static std::unique_ptr<Board> fromHighscore(const Highscore highscore, QObject* parent = nullptr);
 
     // persistor

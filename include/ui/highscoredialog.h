@@ -22,7 +22,5 @@ private slots:
 private:
     Ui::HighscoreDialog *ui;
 
-    unsigned int highscoreCount = 0;
-
     void addHighscore(Highscore* highscore);
 };

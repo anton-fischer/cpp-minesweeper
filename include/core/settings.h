@@ -32,20 +32,20 @@ class Settings
 {
 public:
     // singleton
-    static Settings& instance() {
-        static Settings instance;
-        return instance;
-    }
+    static Settings& instance();
 
     // updates settings and returns true for valid input, false for invalid input
     // nothing is changed when false returned
     bool setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount);
     bool setSettings(const Difficulty difficulty);
 
+    bool getIsInitialized() const;
+    void setIsInitialized(bool isInitialized);
+
     std::unique_ptr<Player>& getCurrentPlayer();
     void setCurrentPlayer(std::unique_ptr<Player> player);
 
-    std::vector<Highscore> getHighscores() const;
+    std::vector<Highscore>& getHighscores();
     void addHighscore(Highscore& highscore);
 
     Difficulty getDifficulty() const;
@@ -58,6 +58,10 @@ public:
     static Difficulty stringToDifficulty(const QString& string);
     static float      getDifficultyXpMultiplier(const Difficulty& difficulty);
 
+    // persistor
+    static void fromJson(const nlohmann::json& j);
+    nlohmann::json toJson() const;
+
     // toString
     friend QDebug operator<<(QDebug dbg, const Settings& s);
 
@@ -69,6 +73,9 @@ private:
     // forbid copying
     Settings(const Settings&) = delete;
     Settings& operator=(const Settings&) = delete;
+
+    // if false it will try to restore settings from savefile on usage
+    bool isInitialized = false;
 
     std::vector<Highscore> highscores;
 

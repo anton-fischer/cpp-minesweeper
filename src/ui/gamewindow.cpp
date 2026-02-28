@@ -272,7 +272,7 @@ void GameWindow::gameWon() {
     ui->grid->setDisabled(true);
     ui->btn_status->setText("😎");
 
-    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END),  "Difficulty enum version mismatch");
+    static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END), "Difficulty enum version mismatch");
 
     switch(board->getDifficulty()) {
         case (Difficulty::EASY):   player->incrementAmountEasyGamesWon(1); break;
@@ -352,10 +352,15 @@ bool GameWindow::saveBoard() {
 
     if (!filePath.isEmpty()) {
         FileHandler handler;
-        handler.saveBoardAsFile(board, filePath.toStdString());
+        bool success = handler.saveBoardAsFile(board, filePath.toStdString());
 
-        qDebug() << QString("Successfully saved board at location %1").arg(filePath);
-        return true;
+        if (success) {
+            qDebug() << QString("Successfully saved board at location %1").arg(filePath);
+            return true;
+        } else {
+            qDebug() << QString("Error while saving board at location %2").arg(filePath);
+            return false;
+        }
     } else {
         qDebug() << "Invalid path given when select location to save file";
     }
