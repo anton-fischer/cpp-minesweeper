@@ -13,6 +13,30 @@ Highscore::Highscore(Player* player, Board* board, unsigned int score) {
     this->score = score;
 }
 
+QString Highscore::getName() const {
+    return this->name;
+}
+
+unsigned int Highscore::getScore() const {
+    return this->score;
+}
+
+unsigned int Highscore::getBoardSizeX() const {
+    return this->boardSizeX;
+}
+
+unsigned int Highscore::getBoardSizeY() const {
+    return this->boardSizeY;
+}
+
+unsigned int Highscore::getBombCount() const {
+    return this->bombCount;
+}
+
+unsigned int Highscore::getStartSeed() const {
+    return this->startSeed;
+}
+
 std::unique_ptr<Highscore> Highscore::fromJson(const nlohmann::json& j) {
     std::unique_ptr<Highscore> h = std::make_unique<Highscore>();
 

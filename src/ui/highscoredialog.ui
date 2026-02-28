@@ -86,11 +86,7 @@
         <number>5</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" name="vbx_highscores">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-        </layout>
+        <layout class="QGridLayout" name="gbx_highscores"/>
        </item>
       </layout>
      </widget>

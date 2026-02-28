@@ -56,7 +56,7 @@ std::unique_ptr<Player>& Settings::getCurrentPlayer() {
     return currentPlayer;
 }
 
-void Settings::setCurrentPlayer(std::unique_ptr<Player>& player) {
+void Settings::setCurrentPlayer(std::unique_ptr<Player> player) {
     this->currentPlayer = std::move(player);
 }
 

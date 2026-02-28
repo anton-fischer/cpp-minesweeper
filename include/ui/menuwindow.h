@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 
+#include <core/settings.h>
+
 class Player;
 class Quest;
 class LevelElement;
@@ -32,11 +34,22 @@ private slots:
 private:
     Ui::MenuWindow *ui;
 
+    bool isSaveFileSaved = true;
+
     LevelElement* levelElement = nullptr;
 
     void closeEvent(QCloseEvent* event) override;
 
-    void loadPlayer(Player* player);
+    // shows a file dialog to chose and loads the current player
+    // returns true if loading was successful, else false
+    bool loadPlayer();
+
+    // updates the UI for the given player
+    bool loadPlayerUI(Player* player = Settings::instance().getCurrentPlayer().get());
+
+    // shows a file dialog to chose and saves the current player
+    // returns true if saving was successful, else false
+    bool savePlayer();
 
     void appendQuest(Quest* quest);
     void clearQuests();

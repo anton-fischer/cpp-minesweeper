@@ -305,13 +305,42 @@ void GameWindow::questCompleted(Quest* quest) {
     appendGameLogMessage(">" + quest->generateObjectiveString(), 0, false, 0xfdb800);
 }
 
-void GameWindow::on_btn_exit_clicked()
-{
-    this->close();
+bool GameWindow::loadBoard() {
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        tr("Load board"),
+        QString(),
+        tr("JSON files (*.json)")
+    );
+
+    if (!filePath.isEmpty()) {
+        if (!filePath.endsWith(".json")) filePath += ".json";
+
+        FileHandler handler;
+        std::unique_ptr<Board> tmpBoard = handler.createBoardFromFile(filePath.toStdString());
+        if (nullptr == tmpBoard) {
+            qDebug() << "Parsing of savefile was not successful when loading board";
+            return false;
+        }
+        board = tmpBoard.release();
+
+        bool valid = false;
+        if (board->getDifficulty() == Difficulty::CUSTOM) valid = Settings::instance().setSettings(board->getBoardSizeX(), board->getBoardSizeY(), board->getBombCount());
+        else                                              valid = Settings::instance().setSettings(board->getDifficulty());
+
+        assert(valid == true); // must be true, otherwise corrupted savefile
+        createNewBoard(board);
+
+        qDebug() << QString("Successfully loaded board from location %1").arg(filePath);
+        return true;
+    } else {
+        qDebug() << "Invalid path given when select savefile to load";
+    }
+
+    return false;
 }
 
-void GameWindow::on_btn_save_clicked()
-{
+bool GameWindow::saveBoard() {
     assert(nullptr != board);
 
     QString filePath = QFileDialog::getSaveFileName(
@@ -324,41 +353,43 @@ void GameWindow::on_btn_save_clicked()
     if (!filePath.isEmpty()) {
         FileHandler handler;
         handler.saveBoardAsFile(board, filePath.toStdString());
-        appendGameLogMessage("Successfully saved current game", 0, true, 0x00d840);
 
-        showStatusBarMessage(QString("Successfully saved board at location %1").arg(filePath), 5000);
+        qDebug() << QString("Successfully saved board at location %1").arg(filePath);
+        return true;
     } else {
         qDebug() << "Invalid path given when select location to save file";
+    }
+
+    return false;
+}
+
+Board* GameWindow::getBoard() const {
+    return this->board;
+}
+
+void GameWindow::on_btn_exit_clicked()
+{
+    this->close();
+}
+
+void GameWindow::on_btn_save_clicked()
+{
+    bool success = saveBoard();
+    if (success) {
+        showStatusBarMessage("Successfully saved board", 5000);
+        appendGameLogMessage("Successfully saved current game", 0, true, 0x00d840);
+    } else {
+        showStatusBarMessage("An error occured while saving board", 5000);
     }
 }
 
 void GameWindow::on_btn_load_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(
-        this,
-        tr("Load board"),
-        QString(),
-        tr("JSON files (*.json)")
-    );
-
-    if (!filePath.isEmpty()) {
-        if (!filePath.endsWith(".json")) filePath += ".json";
-
-        FileHandler handler;
-        std::unique_ptr<Board> tmp = handler.createBoardFromFile(filePath.toStdString());
-        board = tmp.release();
-
-        bool valid = false;
-        if (board->getDifficulty() == Difficulty::CUSTOM) valid = Settings::instance().setSettings(board->getBoardSizeX(), board->getBoardSizeY(), board->getBombCount());
-        else                                              valid = Settings::instance().setSettings(board->getDifficulty());
-
-        assert(valid == true); // must be true, otherwise corrupted savefile
-
-        createNewBoard(board);
+    bool success = loadBoard();
+    if (success) {
+        showStatusBarMessage("Successfully loaded board", 5000);
         appendGameLogMessage("Successfully loaded game", 0, true, 0x00d840);
-
-        showStatusBarMessage(QString("Successfully loaded board"), 5000);
     } else {
-        qDebug() << "Invalid path given when select savefile to load";
+        showStatusBarMessage("An error occured while loading board", 5000);
     }
 }

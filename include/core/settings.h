@@ -43,7 +43,7 @@ public:
     bool setSettings(const Difficulty difficulty);
 
     std::unique_ptr<Player>& getCurrentPlayer();
-    void setCurrentPlayer(std::unique_ptr<Player>& player);
+    void setCurrentPlayer(std::unique_ptr<Player> player);
 
     std::vector<Highscore> getHighscores() const;
     void addHighscore(Highscore& highscore);

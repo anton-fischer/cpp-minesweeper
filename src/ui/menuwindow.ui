@@ -131,14 +131,14 @@
              <item>
               <widget class="QPushButton" name="btn_save">
                <property name="text">
-                <string>Save Profile</string>
+                <string>Save Player</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="btn_load">
                <property name="text">
-                <string>Load Profile</string>
+                <string>Load Player</string>
                </property>
               </widget>
              </item>

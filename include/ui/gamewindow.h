@@ -27,6 +27,7 @@ public:
     ~GameWindow();
 
     void createNewBoard(Board* newBoard = nullptr);
+    Board* getBoard() const;
 
 private slots:
     void tileUpdated(const unsigned int x, unsigned int y);
@@ -51,6 +52,14 @@ private:
     void closeEvent(QCloseEvent* event) override;
 
     void handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button);
+
+    // shows a file dialog to chose and saves the current board
+    // returns true if loading was successful, else false
+    bool loadBoard();
+
+    // shows a file dialog to chose and saves the current board
+    // returns true if saving was successful, else false
+    bool saveBoard();
 
     // log message and increment player xp based on difficulty
     void appendGameLogMessageWithXp(const QString& message, const unsigned int xp = 0, const bool bold = false, const unsigned int color = 0x000000);

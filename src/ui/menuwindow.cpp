@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QTimer>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include <memory>
 
@@ -31,14 +32,18 @@ MenuWindow::MenuWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MenuWi
     ui->hbx_level->addWidget(levelElement);
 
     if (auto& currentPlayer = Settings::instance().getCurrentPlayer()) {
-        loadPlayer(currentPlayer.get());
+        loadPlayerUI();
+
+        // this case happens, when player returns to main menu -> save file was changed
+        this->isSaveFileSaved = false;
     } else {
-        ui->btn_save->setDisabled(true);
         ui->lbl_noPlayerQuests->setVisible(true);
         ui->lbl_noPlayerStatistics->setVisible(true);
         ui->scrollarea_quests->setVisible(false);
         ui->scrollarea_statistics->setVisible(false);
     }
+
+    ui->btn_save->setDisabled(this->isSaveFileSaved);
 
     ui->hbx_main->setStretchFactor(ui->vbx_left, 5);
     ui->hbx_main->setStretchFactor(ui->vbx_right, 5);
@@ -53,8 +58,42 @@ MenuWindow::~MenuWindow()
 
 void MenuWindow::closeEvent(QCloseEvent* event)
 {
-    qDebug() << "MenuWindow was closed";
-    QMainWindow::closeEvent(event);
+    if (isSaveFileSaved) {
+        qDebug() << "MenuWindow was closed, savefile was already saved";
+        event->accept();
+        return;
+    }
+
+    QMessageBox::StandardButton choice = QMessageBox::question(
+        this,
+        tr("Save player profile?"),
+        tr("Do you want to save your player profile before exiting?"),
+        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
+    );
+
+    switch (choice) {
+        case QMessageBox::Yes: {
+            if (savePlayer()) {
+                qDebug() << "MenuWindow was closed, savefile was saved";
+                event->accept();
+            } else {
+                qDebug() << "MenuWindow exit cancelled, savefile save failed";
+                event->ignore();
+            }
+            break;
+        }
+        case QMessageBox::No: {
+            qDebug() << "MenuWindow was closed, savefile was not saved";
+            event->accept();
+            break;
+        }
+        case QMessageBox::Cancel:
+        default: {
+            qDebug() << "MenuWindow exit cancelled";
+            event->ignore();
+            break;
+        }
+    }
 }
 
 void MenuWindow::appendQuest(Quest* quest) {
@@ -84,7 +123,39 @@ void MenuWindow::showStatusBarMessage(QString message, unsigned int timeout) con
     });
 }
 
-void MenuWindow::loadPlayer(Player* player) {
+bool MenuWindow::loadPlayer() {
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        tr("Load player"),
+        QString(),
+        tr("JSON files (*.json)") // tr for possible translation later
+    );
+
+    if (!filePath.isEmpty()) {
+        if (!filePath.endsWith(".json")) filePath += ".json";
+
+        FileHandler handler;
+        auto player = handler.createPlayerFromFile(filePath.toStdString());
+        if (nullptr == player) {
+            qDebug() << "Parsing of savefile was not successful when loading player";
+            return false;
+        }
+
+        Settings::instance().setCurrentPlayer(std::move(player));
+        loadPlayerUI();
+
+        qDebug() << QString("Successfully loaded player %1 from location %2").arg(Settings::instance().getCurrentPlayer()->getName(), filePath);
+        return true;
+    } else {
+        qDebug() << "Invalid path given when select savefile to load";
+    }
+
+    return false;
+}
+
+bool MenuWindow::loadPlayerUI(Player* player) {
+    assert(nullptr != player);
+
     // general
     ui->gbx_player->setTitle("Currently playing as: " + player->getName());
 
@@ -111,55 +182,52 @@ void MenuWindow::loadPlayer(Player* player) {
     ui->lbl_noPlayerStatistics->setVisible(false);
     ui->scrollarea_quests->setVisible(true);
     ui->scrollarea_statistics->setVisible(true);
-    showStatusBarMessage(QString("Successfully loaded player %1").arg(player->getName()), 5000);
+
+    return true;
 }
 
-void MenuWindow::on_btn_save_clicked()
-{
-    auto& currentPlayer = Settings::instance().getCurrentPlayer();
-    assert(nullptr != currentPlayer);
-
+bool MenuWindow::savePlayer() {
     QString filePath = QFileDialog::getSaveFileName(
         this,
         tr("Save player"),
         QString(),
-        tr("JSON files (*.json)") // tr in case for possible translation later
+        tr("JSON files (*.json)") // tr for possible translation later
     );
 
     if (!filePath.isEmpty()) {
         FileHandler handler;
-        handler.savePlayerAsFile(currentPlayer.get(), filePath.toStdString());
+        handler.savePlayerAsFile(Settings::instance().getCurrentPlayer().get(), filePath.toStdString());
 
-        showStatusBarMessage(QString("Successfully saved player %1 at location %2").arg(currentPlayer->getName(), filePath), 5000);
+        this->isSaveFileSaved = true;
+        // disabled because a player should always be able to save additional copies of the savefile
+        //ui->btn_save->setDisabled(this->isSaveFileSaved);
+
+        qDebug() << QString("Successfully saved player %1 at location %2").arg(Settings::instance().getCurrentPlayer()->getName(), filePath);
+        return true;
     } else {
         qDebug() << "Invalid path given when select location to save file";
     }
 
+    return false;
+}
 
+void MenuWindow::on_btn_save_clicked()
+{
+    bool success = savePlayer();
+    if (success) {
+        showStatusBarMessage(QString("Successfully saved player %1").arg(Settings::instance().getCurrentPlayer()->getName()), 5000);
+    } else {
+        showStatusBarMessage(QString("An error occured while saving player %1").arg(Settings::instance().getCurrentPlayer()->getName()), 5000);
+    }
 }
 
 void MenuWindow::on_btn_load_clicked()
-{   
-    QString filePath = QFileDialog::getOpenFileName(
-        this,
-        tr("Load player"),
-        QString(),
-        tr("JSON files (*.json)")
-    );
-
-    if (!filePath.isEmpty()) {
-        if (!filePath.endsWith(".json")) filePath += ".json";
-
-        FileHandler handler;
-        auto player = handler.createPlayerFromFile(filePath.toStdString());
-
-        Settings::instance().setCurrentPlayer(player);
-
-        loadPlayer(Settings::instance().getCurrentPlayer().get());
-
-        showStatusBarMessage(QString("Successfully laoded player"), 5000);
+{
+    bool success = loadPlayer();
+    if (success) {
+        showStatusBarMessage(QString("Successfully loaded player %1").arg(Settings::instance().getCurrentPlayer()->getName()), 5000);
     } else {
-        qDebug() << "Invalid path given when select savefile to load";
+        showStatusBarMessage(QString("An error occured while loading player"), 5000);
     }
 }
 
@@ -180,12 +248,11 @@ void MenuWindow::on_btn_play_clicked()
             QLineEdit::Normal,
             "",
             &ok
-            );
+        );
 
         if (ok && !playerName.isEmpty()) {
             // user pressed okay and entered something
-            std::unique_ptr<Player> p = std::make_unique<Player>(playerName);
-            Settings::instance().setCurrentPlayer(p);
+            Settings::instance().setCurrentPlayer(std::make_unique<Player>(playerName));
         } else {
             // user pressed cancel or invalid input
             return;

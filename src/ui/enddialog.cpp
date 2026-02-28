@@ -55,11 +55,11 @@ EndDialog::~EndDialog()
 
 void EndDialog::on_btn_finish_clicked()
 {
-    if (auto parent = parentWidget()) {
+    if (auto parent = qobject_cast<GameWindow*>(parentWidget())) {
         parent->close();
 
-        if (ui->cbx_saveScore->isChecked()) {
-            Highscore score;
+        if (ui->cbx_saveScore->isChecked()) {           
+            Highscore score(Settings::instance().getCurrentPlayer().get(), parent->getBoard(), 100);
             Settings::instance().addHighscore(score);
         }
     }
@@ -70,6 +70,11 @@ void EndDialog::on_btn_replay_clicked()
 {
     if (auto parent = qobject_cast<GameWindow*>(parentWidget())) {
         parent->createNewBoard();
+
+        if (ui->cbx_saveScore->isChecked()) {
+            Highscore score(Settings::instance().getCurrentPlayer().get(), parent->getBoard(), 100);
+            Settings::instance().addHighscore(score);
+        }
     }
     close();
 }
