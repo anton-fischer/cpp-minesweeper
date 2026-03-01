@@ -72,15 +72,13 @@ void Quest::advanceProgress(const unsigned int newProgress) {
 
     if (this->progress + newProgress >= goal) {
         this->progress = goal;
-        emit questCompleted(this);
         completed = true;
         qDebug() << QString("Completed Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
-        return;
+    } else {
+        this->progress += newProgress;
+        qDebug() << QString("Advanced Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
+        emit questUpdated(this);
     }
-
-    this->progress += newProgress;
-
-    qDebug() << QString("Advanced Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
 }
 
 void Quest::setProgress(const unsigned int newProgress) {
@@ -88,14 +86,14 @@ void Quest::setProgress(const unsigned int newProgress) {
 
     if (newProgress >= goal) {
         this->progress = goal;
-        emit questCompleted(this);
         completed = true;
         qDebug() << QString("Completed Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
-        return;
+        emit questCompleted(this);
+    } else {
+        this->progress = newProgress;
+        qDebug() << QString("Advanced Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
+        emit questUpdated(this);
     }
-
-    this->progress = newProgress;
-    qDebug() << QString("Advanced Quest: type[%1] progress[%2/%3]").arg(questTypeToString(type)).arg(progress).arg(goal);
 }
 
 QString Quest::questTypeToString(const QuestType& questType) {

@@ -9,6 +9,7 @@
 
 #include "core/player.h"
 #include "core/quest.h"
+#include "core/settings.h"
 
 EndDialog::EndDialog(Player* player, bool gameWon, QWidget *parent) : player(player), gameWon(gameWon), QDialog(parent), ui(new Ui::EndDialog)
 {
@@ -58,8 +59,8 @@ void EndDialog::on_btn_finish_clicked()
     if (auto parent = qobject_cast<GameWindow*>(parentWidget())) {
         parent->close();
 
-        if (ui->cbx_saveScore->isChecked()) {           
-            Highscore score(Settings::instance().getCurrentPlayer().get(), parent->getBoard(), 100);
+        if (ui->cbx_saveScore->isChecked()) {
+            Highscore score(Settings::instance().getCurrentPlayer().get(), parent->getBoard(), parent->getGameScore());
             Settings::instance().addHighscore(score);
         }
     }
@@ -72,7 +73,7 @@ void EndDialog::on_btn_replay_clicked()
         parent->createNewBoard();
 
         if (ui->cbx_saveScore->isChecked()) {
-            Highscore score(Settings::instance().getCurrentPlayer().get(), parent->getBoard(), 100);
+            Highscore score(Settings::instance().getCurrentPlayer().get(), parent->getBoard(), parent->getGameScore());
             Settings::instance().addHighscore(score);
         }
     }

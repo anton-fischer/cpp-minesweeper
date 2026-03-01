@@ -2,31 +2,11 @@
 
 #include <memory>
 
+#include "core/difficulty.h"
 #include "core/player.h"
 #include "core/highscore.h"
 
-#define DIFFICULTY_ENUM_GUARD 4
-enum class Difficulty {
-    EASY = 0,
-    MEDIUM = 1,
-    HARD = 2,
-    CUSTOM = 3,
-
-    _END = 4
-};
-
-struct DifficultyData {
-    unsigned int boardSizeX;
-    unsigned int boardSizeY;
-    unsigned int bombCount;
-};
-
-static const std::array<DifficultyData, static_cast<int>(Difficulty::_END)> DIFFICULTY_DATA_TABLE = {{
-    {9,  9,  10},   // EASY
-    {16, 16, 40},   // MEDIUM
-    {30, 16, 99},   // HARD
-    {0,  0,   0}    // CUSTOM
-}};
+#define SETTINGS_SAVE_FILE_VERSION 1
 
 class Settings
 {
@@ -53,10 +33,6 @@ public:
     unsigned int getBoardSizeX() const;
     unsigned int getBoardSizeY() const;
     unsigned int getBombCount() const;
-
-    static QString    difficultyToString(const Difficulty& difficulty);
-    static Difficulty stringToDifficulty(const QString& string);
-    static float      getDifficultyXpMultiplier(const Difficulty& difficulty);
 
     // persistor
     static void fromJson(const nlohmann::json& j);

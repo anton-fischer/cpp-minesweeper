@@ -3,10 +3,10 @@
 #include <QObject>
 #include <memory>
 
-#include "quest.h"
+#include "core/quest.h"
 #include "utils/json.hpp"
 
-#define SAVE_FILE_VERSION 1
+#define PLAYER_SAVE_FILE_VERSION 1
 
 class Player : public QObject
 {

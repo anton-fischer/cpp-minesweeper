@@ -14,14 +14,10 @@ HighscoreDialog::HighscoreDialog(QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("Highscores");
 
-    for (auto& highscore : Settings::instance().getHighscores()) {
-        addHighscore(&highscore);
-    }
+    updateUI();
 
     connect(this, &QDialog::rejected, this, []() {
         qDebug() << "Dialog was closed via X";
-
-        // TODO save highscores
     });
 }
 
@@ -33,6 +29,14 @@ HighscoreDialog::~HighscoreDialog()
 void HighscoreDialog::on_btn_exit_clicked()
 {
     close();
+}
+
+void HighscoreDialog::updateUI() {
+    clearHighscores();
+
+    for (auto& highscore : Settings::instance().getHighscores()) {
+        addHighscore(&highscore);
+    }
 }
 
 void HighscoreDialog::addHighscore(Highscore* highscore) {
@@ -69,12 +73,52 @@ void HighscoreDialog::addHighscore(Highscore* highscore) {
     QToolButton* btnReplay = new QToolButton();
     btnReplay->setText("🔄 Replay");
     btnReplay->setMinimumSize(30, 30);
-    grid->addWidget(btnReplay, row, 4);
 
     connect(btnReplay, &QToolButton::clicked, this, [highscore]() {
-        qDebug() << "Replay clicked for seed:" << highscore->getStartSeed();
+        qDebug() << "Replay clicked for highscore with seed:" << highscore->getStartSeed();
         // TODO implement replay logic
     });
 
+    grid->addWidget(btnReplay, row, 4);
+
+    // Column 5: Delete Button
+    QToolButton* btnDelete = new QToolButton();
+    btnDelete->setText("❌ Delete️");
+    btnDelete->setMinimumSize(30, 30);
+
+    connect(btnDelete, &QToolButton::clicked, this, [highscore, this]() {
+        qDebug() << "Delete clicked for highscore:" << highscore->getName();
+        auto& highscores = Settings::instance().getHighscores();
+
+        highscores.erase(
+            std::remove_if(highscores.begin(), highscores.end(),
+                [highscore](const Highscore& h) {
+                    return h.getName() == highscore->getName() && h.getStartSeed() == highscore->getStartSeed() && h.getScore() == highscore->getScore();
+                }),
+            highscores.end()
+        );
+
+        updateUI();
+    });
+
+    grid->addWidget(btnDelete, row, 5);
+
     qDebug() << "Added highscore: " << *highscore;
+}
+
+void HighscoreDialog::clearHighscores() {
+    for (int i = ui->gbx_highscores->count() - 1; i >= 0; --i) { // iterate backwarts to prevent moving of indices due to takeAt
+        int row, col, rowSpan, colSpan;
+        ui->gbx_highscores->getItemPosition(i, &row, &col, &rowSpan, &colSpan);
+
+        if (row > 0) {
+            QLayoutItem* item = ui->gbx_highscores->takeAt(i);
+
+            if (QWidget* w = item->widget()) {
+                w->deleteLater(); // delete widget
+            }
+
+            delete item; // delete layout
+        }
+    }
 }

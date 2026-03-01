@@ -7,6 +7,7 @@
 
 #include "core/board.h"
 #include "core/player.h"
+#include "core/settings.h"
 
 FileHandler::FileHandler() {}
 

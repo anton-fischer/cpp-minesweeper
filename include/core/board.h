@@ -3,20 +3,27 @@
 #include <vector>
 #include <QObject>
 
-#include "Tile.h"
-#include "core/settings.h"
+#include "core/Tile.h"
+#include "core/difficulty.h"
 
 class Highscore;
 
-#define SAVE_FILE_VERSION 1
+#define BOARD_SAVE_FILE_VERSION 1
 
 class Board : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Board(QObject* parent = nullptr); // generate board based on current settings
-    Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, const Difficulty difficulty, QObject* parent = nullptr); // generate board based on values
+    // generate board based on current settings
+    explicit Board(QObject* parent = nullptr);
+
+    // generate board based on given values
+    Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, const Difficulty difficulty, QObject* parent = nullptr);
+
+    // generate board based on given highscore
+    Board(Highscore* highscore, QObject* parent = nullptr);
+
     ~Board() = default;
 
     // return -1 if flag removed, 0 if nothing changed, 1 if flag placed

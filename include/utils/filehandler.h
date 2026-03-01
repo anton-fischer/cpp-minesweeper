@@ -4,8 +4,6 @@
 
 #include "json.hpp"
 
-#define SAVE_FILE_VERSION 1
-
 using json = nlohmann::json;
 
 class Board;

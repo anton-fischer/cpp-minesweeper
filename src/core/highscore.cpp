@@ -6,6 +6,7 @@
 Highscore::Highscore(Player* player, Board* board, unsigned int score) {
     this->name = player->getName();
 
+    this->difficulty = board->getDifficulty();
     this->boardSizeX = board->getBoardSizeX();
     this->boardSizeY = board->getBoardSizeY();
     this->bombCount  = board->getBombCount();
@@ -20,6 +21,10 @@ QString Highscore::getName() const {
 
 unsigned int Highscore::getScore() const {
     return this->score;
+}
+
+Difficulty Highscore::getDifficulty() const {
+    return this->difficulty;
 }
 
 unsigned int Highscore::getBoardSizeX() const {
@@ -43,11 +48,13 @@ std::unique_ptr<Highscore> Highscore::fromJson(const nlohmann::json& j) {
 
     // general
     h->name       = QString::fromStdString(j.at("name"));
+    h->score      = j.at("score");
+
+    h->difficulty = DifficultyUtil::stringToDifficulty(QString::fromStdString(j.at("difficulty")));
     h->boardSizeX = j.at("boardSizeX");
     h->boardSizeY = j.at("boardSizeY");
     h->bombCount  = j.at("bombCount");
 
-    h->score      = j.at("score");
     h->startSeed  = j.at("startSeed");
 
     return h;
@@ -58,11 +65,13 @@ nlohmann::json Highscore::toJson() const {
 
     // general
     h["name"]       = name.toStdString();
+    h["score"]      = score;
+
+    h["difficulty"] = DifficultyUtil::difficultyToString(difficulty).toStdString();
     h["boardSizeX"] = boardSizeX;
     h["boardSizeY"] = boardSizeY;
     h["bombCount"]  = bombCount;
 
-    h["score"]      = score;
     h["startSeed"]  = startSeed;
 
     return h;

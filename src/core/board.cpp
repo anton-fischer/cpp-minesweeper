@@ -13,6 +13,11 @@ Board::Board(QObject* parent) :
     Board(Settings::instance().getBoardSizeX(), Settings::instance().getBoardSizeY(), Settings::instance().getBombCount(), Settings::instance().getDifficulty(), parent) {
 };
 
+Board::Board(Highscore* highscore, QObject* parent) :
+    Board(highscore->getBoardSizeX(), highscore->getBoardSizeY(), highscore->getBombCount(), highscore->getDifficulty(), parent) {
+    this->startSeed = highscore->getStartSeed();
+};
+
 Board::Board(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount, const Difficulty difficulty, QObject* parent) :
     boardSizeX(boardSizeX), boardSizeY(boardSizeY), bombCount(bombCount), difficulty(difficulty), QObject(parent) {
 
@@ -53,10 +58,7 @@ void Board::generateBombs(const unsigned int startX, const unsigned int startY) 
 
     // shuffle
     std::random_device seeder;
-    this->startSeed = seeder();
-
-    // read from savefile if replay
-    // TODO implement this case
+    if (this->startSeed == 0) this->startSeed = seeder(); // use random seed if no seed was preset
 
     std::mt19937 generator(startSeed);
     std::shuffle(positions.begin(), positions.end(), generator);
@@ -239,9 +241,9 @@ std::unique_ptr<Board> Board::fromJson(const nlohmann::json& j, QObject* parent)
     std::unique_ptr<Board> b = std::make_unique<Board>();
 
     // general
-    assert(j.at("saveVersion") == SAVE_FILE_VERSION && "save file version missmatch detected while loading board");
+    assert(j.at("saveVersion") == BOARD_SAVE_FILE_VERSION && "save file version missmatch detected while loading board");
 
-    b->difficulty = Settings::stringToDifficulty(QString::fromStdString(j.at("general").at("difficulty")));
+    b->difficulty = DifficultyUtil::stringToDifficulty(QString::fromStdString(j.at("general").at("difficulty")));
     b->boardSizeX = j.at("general").at("boardSizeX");
     b->boardSizeY = j.at("general").at("boardSizeY");
     b->bombCount  = j.at("general").at("bombCount");
@@ -272,9 +274,9 @@ nlohmann::json Board::toJson() const {
     nlohmann::json j;
 
     // general
-    j["saveVersion"] = SAVE_FILE_VERSION;
+    j["saveVersion"] = BOARD_SAVE_FILE_VERSION;
 
-    j["general"]["difficulty"]  = Settings::difficultyToString(this->difficulty).toStdString();
+    j["general"]["difficulty"]  = DifficultyUtil::difficultyToString(this->difficulty).toStdString();
     j["general"]["boardSizeX"]  = this->boardSizeX;
     j["general"]["boardSizeY"]  = this->boardSizeY;
     j["general"]["bombCount"]   = this->bombCount;
@@ -299,5 +301,5 @@ nlohmann::json Board::toJson() const {
 }
 
 QDebug operator<<(QDebug dbg, const Board& b) {
-    return dbg << "difficulty[" << Settings::difficultyToString(b.difficulty) << "] boardSizeX[" << b.boardSizeX << "] boardSizeY[" << b.boardSizeY << "] bombCount[" << b.bombCount << "] progress[" << b.progress << "] flagCount[" << b.flagCount << "]";
+    return dbg << "difficulty[" << DifficultyUtil::difficultyToString(b.difficulty) << "] boardSizeX[" << b.boardSizeX << "] boardSizeY[" << b.boardSizeY << "] bombCount[" << b.bombCount << "] progress[" << b.progress << "] flagCount[" << b.flagCount << "]";
 }

@@ -18,6 +18,15 @@
 
 #include <utils/filehandler.h>
 
+GameWindow::GameWindow(Board* startBoard, QWidget* parent) : GameWindow(parent) {
+    // problem delegated constructor gets called first
+    // TODO implement
+};
+
+GameWindow::GameWindow(unsigned int startSeed, QWidget* parent) : GameWindow(parent) {
+    // TODO implement
+};
+
 GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWindow) {
     ui->setupUi(this);
     ui->progressBar_progress->setValue(0);
@@ -29,6 +38,7 @@ GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWi
     connect(player.get(), &Player::playerLevelUp, this, &GameWindow::playerLevelUp);
 
     for (auto& quest : player->getQuests()) {
+        connect(quest.get(), &Quest::questUpdated, this, &GameWindow::questUpdated);
         connect(quest.get(), &Quest::questCompleted, this, &GameWindow::questCompleted);
     }
 
@@ -77,13 +87,13 @@ void GameWindow::createNewBoard(Board* newBoard) {
 
     showStatusBarMessage("Successfully created new board", 5000);
 
-    this->setWindowTitle(QString("Minesweeper - %1").arg(Settings::difficultyToString(board->getDifficulty())));
-    ui->lbl_xpBonus->setText(QString("XP Bonus: %1x XP").arg(Settings::getDifficultyXpMultiplier(board->getDifficulty())));
+    this->setWindowTitle(QString("Minesweeper - %1").arg(DifficultyUtil::difficultyToString(board->getDifficulty())));
+    ui->lbl_xpBonus->setText(QString("XP Bonus: %1x XP").arg(DifficultyUtil::getDifficultyXpMultiplier(board->getDifficulty())));
 
     //this->resize(this->sizeHint()); // resize in case board size changed
 }
 
-void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button) {
+void GameWindow::handleTileClick(unsigned int x, unsigned int y, const Qt::MouseButton& button) {
     qDebug() << QString("Click registered at: x[%1] y[%2]").arg(x).arg(y);
     auto& player = Settings::instance().getCurrentPlayer();
 
@@ -92,27 +102,23 @@ void GameWindow::handleTileClick(const unsigned int x, const unsigned int y, con
         int flagPlaced = board->placeFlag(x, y);
         if (flagPlaced == 1) { // flag placed
             player->incrementAmountFlagsPlaced(1);
-            appendGameLogMessageWithXp("Flag placed", 10);
+            appendGameLogMessage("Flag placed", 10);
+            increaseScore(10);
         } else if (flagPlaced == -1) { // flag removed
             player->decrementAmountFlagsPlaced(1);
-            player->decrementXp(10);
+            decreaseScore(10);
         }
     }
     // uncover tile
     else if (button == Qt::LeftButton) {
         unsigned int amountRevealed = board->revealTile(x, y);
         player->incrementAmountTilesUncovered(amountRevealed);
-        appendGameLogMessageWithXp("Tiles uncovered", amountRevealed);
+        appendGameLogMessage("Tiles uncovered", amountRevealed);
+        increaseScore(amountRevealed);
     }
 }
 
-void GameWindow::appendGameLogMessageWithXp(const QString& message, const unsigned int xp, const bool bold, const unsigned int color) {
-    unsigned int xpGain = xp * Settings::getDifficultyXpMultiplier(board->getDifficulty());
-    Settings::instance().getCurrentPlayer()->incrementXp(xpGain);
-    appendGameLogMessage(message, xpGain, bold, color);
-}
-
-void GameWindow::appendGameLogMessage(const QString& message, const unsigned int xp, const bool bold, const unsigned int color) {
+void GameWindow::appendGameLogMessage(const QString& message, unsigned int xp, bool bold, unsigned int color) {
     auto* widget = new QWidget(this);
     auto* layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0,0,0,0);
@@ -131,6 +137,7 @@ void GameWindow::appendGameLogMessage(const QString& message, const unsigned int
     layout->addWidget(messageLabel);
 
     if (xp != 0u) {
+        xp *= DifficultyUtil::getDifficultyXpMultiplier(board->getDifficulty());
         auto* xpLabel = new QLabel(QString::fromStdString("+" + std::to_string(xp) + "XP"), widget);
 
         xpLabel->setMaximumWidth(50);
@@ -153,12 +160,28 @@ void GameWindow::appendGameLogMessage(const QString& message, const unsigned int
     });
 }
 
-void GameWindow::showStatusBarMessage(QString message, unsigned int timeout) const {
+void GameWindow::showStatusBarMessage(const QString& message, unsigned int timeout) const {
     statusBar()->showMessage(message, timeout);
 
     QTimer::singleShot(timeout, this, [this]() {
         ui->statusbar->showMessage("Minesweeper v1.0");
     });
+}
+
+void GameWindow::increaseScore(unsigned int amount) {
+    amount *= DifficultyUtil::getDifficultyXpMultiplier(board->getDifficulty());
+    Settings::instance().getCurrentPlayer()->incrementXp(amount);
+
+    this->gameScore += amount;
+    ui->lcd_currentScore->display(static_cast<int>(this->gameScore));
+}
+
+void GameWindow::decreaseScore(unsigned int amount) {
+    amount *= DifficultyUtil::getDifficultyXpMultiplier(board->getDifficulty());
+    Settings::instance().getCurrentPlayer()->decrementXp(amount);
+
+    this->gameScore -= amount;
+    ui->lcd_currentScore->display(static_cast<int>(this->gameScore));
 }
 
 void GameWindow::on_btn_restart_clicked()
@@ -169,7 +192,7 @@ void GameWindow::on_btn_restart_clicked()
     if (dialog.getSuccess()) createNewBoard();
 }
 
-void GameWindow::tileUpdated(const unsigned int x, unsigned int y) {
+void GameWindow::tileUpdated(unsigned int x, unsigned int y) {
     QToolButton* btn = boardGridTiles[y][x];
     const Tile& tile = board->getTile(x, y);
 
@@ -258,7 +281,8 @@ void GameWindow::bombHit() {
     player->incrementAmountGamesPlayed(1);
 
     // xp and log message
-    appendGameLogMessageWithXp("GAME OVER: Bomb hit!", 50, true, 0xd80000);
+    appendGameLogMessage("GAME OVER: Bomb hit!", 50, true, 0xd80000);
+    increaseScore(50);
 
     EndDialog dialog(player.get(), false, this);
     dialog.exec();
@@ -285,7 +309,8 @@ void GameWindow::gameWon() {
     player->incrementAmountGamesPlayed(1);
 
     // xp and log message
-    appendGameLogMessageWithXp("GAME OVER: You win!", 200, true, 0x00d840);
+    appendGameLogMessage("GAME OVER: You win!", 200, true, 0x00d840);
+    increaseScore(200);
 
     EndDialog dialog(player.get(), true, this);
     dialog.exec();
@@ -296,13 +321,21 @@ void GameWindow::gameWon() {
 void GameWindow::playerLevelUp() {
     auto& player = Settings::instance().getCurrentPlayer();
 
-    appendGameLogMessage(QString("LEVEL UP: %1->%2").arg(player->getLevel() - 1).arg(player->getLevel()), 0, true, 0xfdb800);
+    appendGameLogMessage(QString("LEVEL UP: %1➤%2").arg(player->getLevel() - 1).arg(player->getLevel()), 0, true, 0xfdb800);
     appendGameLogMessage(QString("> XP for next level up: %1XP").arg(player->getMaxXp()), 0, false, 0xfdb800);
 }
 
+void GameWindow::questUpdated(Quest* quest) {
+    appendGameLogMessage(QString("%1: [%2/%3]").arg(quest->generateObjectiveString()).arg(quest->getProgress()).arg(quest->getGoal()), 0, false, 0xacacac);
+}
+
 void GameWindow::questCompleted(Quest* quest) {
-    appendGameLogMessageWithXp("QUEST COMPLETED", quest->getReward(), true, 0xfdb800);
+    appendGameLogMessage("QUEST COMPLETED", quest->getReward(), true, 0xfdb800);
     appendGameLogMessage(">" + quest->generateObjectiveString(), 0, false, 0xfdb800);
+}
+
+unsigned int GameWindow::getGameScore() const {
+    return this->gameScore;
 }
 
 bool GameWindow::loadBoard() {

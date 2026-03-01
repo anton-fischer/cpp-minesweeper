@@ -2,6 +2,7 @@
 
 #include <QString>
 
+#include "core/difficulty.h"
 #include "utils/json.hpp"
 
 class Player;
@@ -16,9 +17,12 @@ public:
 
     QString getName() const;
     unsigned int getScore() const;
+
+    Difficulty getDifficulty() const;
     unsigned int getBoardSizeX() const;
     unsigned int getBoardSizeY() const;
     unsigned int getBombCount() const;
+
     unsigned int getStartSeed() const;
 
     // persistor
@@ -30,9 +34,9 @@ public:
 
 private:
     QString name = "Uninitialized";
-
     unsigned int score = 0;
 
+    Difficulty difficulty = Difficulty::CUSTOM;
     unsigned int boardSizeX = 0;
     unsigned int boardSizeY = 0;
     unsigned int bombCount = 0;

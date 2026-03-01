@@ -40,6 +40,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         include/ui/questelement.h src/ui/questelement.cpp src/ui/questElement.ui
         include/ui/levelelement.h src/ui/levelelement.cpp src/ui/levelElement.ui
         include/ui/highscoredialog.h src/ui/highscoredialog.cpp src/ui/highscoredialog.ui
+        include/core/difficulty.h src/core/difficulty.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET minesweeper APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

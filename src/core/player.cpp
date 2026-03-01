@@ -23,7 +23,7 @@ Player::Player(const QString& name, QObject* parent) : name(name), QObject(paren
 }
 
 void Player::questCompleted(Quest* quest) {
-    //incrementXp(quest->getGoal()); gets already added in gamewindow
+    incrementXp(quest->getGoal());
 }
 
 QString Player::getName() const {
@@ -211,7 +211,7 @@ std::unique_ptr<Player> Player::fromJson(const nlohmann::json& j, QObject* paren
     std::unique_ptr<Player> p = std::make_unique<Player>();
 
     // general
-    assert(j.at("saveVersion") == SAVE_FILE_VERSION && "save file version missmatch detected while loading player");
+    assert(j.at("saveVersion") == PLAYER_SAVE_FILE_VERSION && "save file version missmatch detected while loading player");
     p->name = QString::fromStdString(j.at("name"));
 
     // progress
@@ -242,7 +242,7 @@ std::unique_ptr<Player> Player::fromJson(const nlohmann::json& j, QObject* paren
 nlohmann::json Player::toJson() const {
     nlohmann::json j;
     // general
-    j["saveVersion"] = SAVE_FILE_VERSION;
+    j["saveVersion"] = PLAYER_SAVE_FILE_VERSION;
     j["name"]        = this->name.toStdString();
 
     // progress

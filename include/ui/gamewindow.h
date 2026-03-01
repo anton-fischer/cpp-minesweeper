@@ -24,10 +24,14 @@ class GameWindow : public QMainWindow
 
 public:
     explicit GameWindow(QWidget* parent = nullptr);
+    explicit GameWindow(Board* startBoard, QWidget* parent = nullptr);
+    explicit GameWindow(unsigned int startSeed, QWidget* parent = nullptr);
     ~GameWindow();
 
     void createNewBoard(Board* newBoard = nullptr);
     Board* getBoard() const;
+
+    unsigned int getGameScore() const;
 
 private slots:
     void tileUpdated(const unsigned int x, unsigned int y);
@@ -36,6 +40,7 @@ private slots:
     void bombHit();
     void gameWon();
 
+    void questUpdated(Quest* quest);
     void questCompleted(Quest* quest);
 
     void playerLevelUp();
@@ -51,7 +56,12 @@ private:
 
     void closeEvent(QCloseEvent* event) override;
 
-    void handleTileClick(const unsigned int x, const unsigned int y, const Qt::MouseButton& button);
+    void handleTileClick(unsigned int x, unsigned int y, const Qt::MouseButton& button);
+
+    // increases player score and increment player xp based on difficulty
+    void increaseScore(unsigned int amount);
+    // decreases player score and increment player xp based on difficulty
+    void decreaseScore(unsigned int amount);
 
     // shows a file dialog to chose and saves the current board
     // returns true if loading was successful, else false
@@ -61,12 +71,12 @@ private:
     // returns true if saving was successful, else false
     bool saveBoard();
 
-    // log message and increment player xp based on difficulty
-    void appendGameLogMessageWithXp(const QString& message, const unsigned int xp = 0, const bool bold = false, const unsigned int color = 0x000000);
-    // only log message without changing player xp
-    void appendGameLogMessage(const QString& message, const unsigned int xp = 0, const bool bold = false, const unsigned int color = 0x000000);
+    // append a message to the gamelog
+    void appendGameLogMessage(const QString& message, unsigned int xp = 0, bool bold = false, unsigned int color = 0x000000);
 
-    void showStatusBarMessage(QString message, unsigned int timeout) const;
+    void showStatusBarMessage(const QString& message, unsigned int timeout) const;
+
+    unsigned int gameScore = 0;
 
     Board* board = nullptr;
     QGridLayout* boardGrid = nullptr;

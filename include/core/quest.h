@@ -84,6 +84,7 @@ public:
     friend QDebug operator<<(QDebug dbg, const Quest& q);
 
 signals:
+    void questUpdated(Quest* quest);
     void questCompleted(Quest* quest);
 
 private:
