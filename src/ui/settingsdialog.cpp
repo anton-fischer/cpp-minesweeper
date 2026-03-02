@@ -64,6 +64,36 @@ void SettingsDialog::on_input_difficulty_currentTextChanged(const QString &text)
     }
 }
 
+void SettingsDialog::updateBombCountLimit()
+{
+    unsigned int boardSize = ui->input_boardSizeX->value() * ui->input_boardSizeY->value();
+    unsigned int maxBombs =  ui->input_boardSizeX->value() * ui->input_boardSizeY->value() * 0.50; // allow 50% bombs
+
+    QSignalBlocker blocker(ui->input_bombCount); // avoids recursive calls
+    if (ui->input_bombCount->value() > maxBombs) {
+        ui->input_bombCount->setValue(maxBombs);
+        qDebug() << "bombCount adapted to" << maxBombs;
+    }
+}
+
+void SettingsDialog::on_input_boardSizeX_valueChanged(int value)
+{
+    qDebug() << "boardSizeX changed to" << value;
+    updateBombCountLimit();
+}
+
+void SettingsDialog::on_input_boardSizeY_valueChanged(int value)
+{
+    qDebug() << "boardSizeY changed to" << value;
+    updateBombCountLimit();
+}
+
+void SettingsDialog::on_input_bombCount_valueChanged(int value)
+{
+    qDebug() << "bombCount changed to" << value;
+    updateBombCountLimit();
+}
+
 bool SettingsDialog::getSuccess() const {
     return this->success;
 }

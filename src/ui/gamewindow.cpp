@@ -18,16 +18,10 @@
 
 #include <utils/filehandler.h>
 
-GameWindow::GameWindow(Board* startBoard, QWidget* parent) : GameWindow(parent) {
-    // problem delegated constructor gets called first
-    // TODO implement
-};
+GameWindow::GameWindow(QWidget* parent) : GameWindow(nullptr, parent) {
+}
 
-GameWindow::GameWindow(unsigned int startSeed, QWidget* parent) : GameWindow(parent) {
-    // TODO implement
-};
-
-GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWindow) {
+GameWindow::GameWindow(Board* startBoard, QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWindow) {
     ui->setupUi(this);
     ui->progressBar_progress->setValue(0);
     ui->vbx_gamelog->setAlignment(Qt::AlignTop);
@@ -53,8 +47,8 @@ GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWi
 
     showStatusBarMessage("Minesweeper v1.0", 0);
 
-    createNewBoard();
-}
+    createNewBoard(startBoard);
+};
 
 GameWindow::~GameWindow()
 {

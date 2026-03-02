@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>440</height>
+    <height>458</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,6 +49,12 @@
             <width>0</width>
             <height>40</height>
            </size>
+          </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+          </property>
+          <property name="statusTip">
+           <string/>
           </property>
           <property name="text">
            <string>Play</string>

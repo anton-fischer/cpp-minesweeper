@@ -43,6 +43,10 @@ unsigned int Highscore::getStartSeed() const {
     return this->startSeed;
 }
 
+bool Highscore::operator<(const Highscore& other) const {
+    return score > other.score; // descending >, not ascending <
+}
+
 std::unique_ptr<Highscore> Highscore::fromJson(const nlohmann::json& j) {
     std::unique_ptr<Highscore> h = std::make_unique<Highscore>();
 

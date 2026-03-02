@@ -7,6 +7,8 @@
 #include "core/settings.h"
 #include "core/highscore.h"
 
+#include <ui/menuwindow.h>
+
 HighscoreDialog::HighscoreDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::HighscoreDialog)
@@ -34,7 +36,11 @@ void HighscoreDialog::on_btn_exit_clicked()
 void HighscoreDialog::updateUI() {
     clearHighscores();
 
-    for (auto& highscore : Settings::instance().getHighscores()) {
+    auto& highscores = Settings::instance().getHighscores();
+
+    std::sort(highscores.begin(), highscores.end());
+
+    for (auto& highscore : highscores) {
         addHighscore(&highscore);
     }
 }
@@ -45,7 +51,7 @@ void HighscoreDialog::addHighscore(Highscore* highscore) {
     unsigned int row = grid->rowCount();
 
     // Column 1: Rank
-    QLabel* lblRank = new QLabel(QString::number(row));
+    QLabel* lblRank = new QLabel(QString::number(++highscoreCount));
     lblRank->setAlignment(Qt::AlignCenter);
     grid->addWidget(lblRank, row, 0);
 
@@ -74,9 +80,12 @@ void HighscoreDialog::addHighscore(Highscore* highscore) {
     btnReplay->setText("🔄 Replay");
     btnReplay->setMinimumSize(30, 30);
 
-    connect(btnReplay, &QToolButton::clicked, this, [highscore]() {
+    connect(btnReplay, &QToolButton::clicked, this, [highscore, this]() {
         qDebug() << "Replay clicked for highscore with seed:" << highscore->getStartSeed();
-        // TODO implement replay logic
+        if (auto parent = qobject_cast<MenuWindow*>(parentWidget())) {
+            parent->startGame(highscore);
+        }
+        close();
     });
 
     grid->addWidget(btnReplay, row, 4);
@@ -107,6 +116,8 @@ void HighscoreDialog::addHighscore(Highscore* highscore) {
 }
 
 void HighscoreDialog::clearHighscores() {
+    highscoreCount = 0;
+
     for (int i = ui->gbx_highscores->count() - 1; i >= 0; --i) { // iterate backwarts to prevent moving of indices due to takeAt
         int row, col, rowSpan, colSpan;
         ui->gbx_highscores->getItemPosition(i, &row, &col, &rowSpan, &colSpan);

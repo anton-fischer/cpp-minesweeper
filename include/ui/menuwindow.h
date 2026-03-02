@@ -22,6 +22,9 @@ public:
     explicit MenuWindow(QWidget* parent = nullptr);
     ~MenuWindow();
 
+    // starts game, uses random seed if no highscore is given
+    void startGame(Highscore* highscore = nullptr);
+
 private slots:
     void on_btn_load_clicked();
     void on_btn_save_clicked();

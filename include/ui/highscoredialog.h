@@ -26,4 +26,6 @@ private:
 
     void addHighscore(Highscore* highscore);
     void clearHighscores();
+
+    unsigned int highscoreCount = 0;
 };

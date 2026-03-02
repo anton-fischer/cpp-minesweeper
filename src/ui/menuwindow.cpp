@@ -105,6 +105,41 @@ void MenuWindow::closeEvent(QCloseEvent* event)
     }
 }
 
+void MenuWindow::startGame(Highscore* highscore) {
+    // if no player loaded, create new one
+    if (nullptr == Settings::instance().getCurrentPlayer()) {
+        bool ok;
+        QString playerName = QInputDialog::getText(
+            this,
+            "Create Player",
+            "Please enter a name:",
+            QLineEdit::Normal,
+            "",
+            &ok
+            );
+
+        if (ok && !playerName.isEmpty()) {
+            // user pressed okay and entered something
+            Settings::instance().setCurrentPlayer(std::make_unique<Player>(playerName));
+        } else {
+            // user pressed cancel or invalid input
+            return;
+        }
+    }
+
+    this->isSaveFileSaved = true; // to prevent file save dialog from showing up when leaving menu
+
+    GameWindow* window = nullptr;
+    if (nullptr == highscore) {
+        window = new GameWindow();
+    } else {
+        window = new GameWindow(new Board(highscore));
+    }
+
+    window->show();
+    this->close();
+}
+
 void MenuWindow::appendQuest(Quest* quest) {
     auto newQuest = new QuestElement(quest, this);
     ui->vbx_quests->addWidget(newQuest);
@@ -251,32 +286,8 @@ void MenuWindow::on_btn_exit_clicked()
 }
 
 void MenuWindow::on_btn_play_clicked()
-{    
-    // if no player loaded, create new one
-    if (nullptr == Settings::instance().getCurrentPlayer()) {
-        bool ok;
-        QString playerName = QInputDialog::getText(
-            this,
-            "Create Player",
-            "Please enter a name:",
-            QLineEdit::Normal,
-            "",
-            &ok
-        );
-
-        if (ok && !playerName.isEmpty()) {
-            // user pressed okay and entered something
-            Settings::instance().setCurrentPlayer(std::make_unique<Player>(playerName));
-        } else {
-            // user pressed cancel or invalid input
-            return;
-        }
-    }
-
-    this->isSaveFileSaved = true; // to prevent file save dialog from showing up when leaving menu
-    GameWindow* window = new GameWindow();
-    window->show();
-    this->close();
+{
+    startGame();
 }
 
 void MenuWindow::on_btn_configure_clicked()

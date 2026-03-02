@@ -24,10 +24,9 @@ Settings& Settings::instance() {
     return instance;
 }
 
-// TODO maybe introduce enum as return value instead of bool for better exception handling
 bool Settings::setSettings(const unsigned int boardSizeX, const unsigned int boardSizeY, const unsigned int bombCount) {
-    //if (boardSizeX < 3 || boardSizeY < 3 || boardSizeX > 10 || boardSizeY > 10) return false; // minimum boardSize is 3x3, maximum boardSize is 10x10
-    //if (bombCount < 1 || bombCount >= boardSizeX * boardSizeY / 2) return false; // minimum bombCount is 1, maximum bombCount is boardSizeX * boardSizeY / 2
+    if (boardSizeX < 5 || boardSizeY < 5 || boardSizeX > 100 || boardSizeY > 100) return false; // minimum boardSize is 5x5, maximum boardSize is 100x100
+    if (bombCount < 1 || bombCount > boardSizeX * boardSizeY * 0.5) return false; // minimum bombCount is 1, maximum bombCount is 50% of whole board
 
     this->difficulty = Difficulty::CUSTOM;
     this->boardSizeX = boardSizeX;
@@ -62,6 +61,13 @@ std::vector<Highscore>& Settings::getHighscores() {
 
 void Settings::addHighscore(Highscore& highscore) {
     this->highscores.push_back(highscore);
+
+    std::sort(highscores.begin(), highscores.end());
+
+    // only keep best 100 highscores
+    if (highscores.size() > 100) {
+        highscores.resize(100);
+    }
 }
 
 unsigned int Settings::getBoardSizeX() const {

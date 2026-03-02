@@ -25,7 +25,6 @@ class GameWindow : public QMainWindow
 public:
     explicit GameWindow(QWidget* parent = nullptr);
     explicit GameWindow(Board* startBoard, QWidget* parent = nullptr);
-    explicit GameWindow(unsigned int startSeed, QWidget* parent = nullptr);
     ~GameWindow();
 
     void createNewBoard(Board* newBoard = nullptr);

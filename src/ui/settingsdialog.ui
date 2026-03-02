@@ -32,6 +32,25 @@
      <item row="0" column="1">
       <widget class="QComboBox" name="input_difficulty"/>
      </item>
+     <item row="0" column="2">
+      <widget class="QToolButton" name="btn_tooltip">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Preset Difficulties:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;EASY: 9x9, 10 bombs&lt;/p&gt;&lt;p&gt;MEDIUM: 9x9, 10 bombs&lt;/p&gt;&lt;p&gt;HARD: 9x9, 10 bombs&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Custom Difficulty:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Size: 5x5 - 100x100&lt;/p&gt;&lt;p&gt;BombCount: 1 - 50% of board size&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="QIcon::ThemeIcon::HelpFaq"/>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -45,6 +64,12 @@
     <layout class="QGridLayout" name="grid_customSettings">
      <item row="1" column="1">
       <widget class="QSpinBox" name="input_boardSizeY">
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
        <property name="value">
         <number>5</number>
        </property>
@@ -65,13 +90,25 @@
      </item>
      <item row="2" column="1">
       <widget class="QSpinBox" name="input_bombCount">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>9999</number>
+       </property>
        <property name="value">
-        <number>10</number>
+        <number>1</number>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
       <widget class="QSpinBox" name="input_boardSizeX">
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
        <property name="value">
         <number>5</number>
        </property>

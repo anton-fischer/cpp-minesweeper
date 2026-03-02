@@ -25,6 +25,9 @@ public:
 
     unsigned int getStartSeed() const;
 
+    // sorts highscores by score descending
+    bool operator<(const Highscore& other) const;
+
     // persistor
     static std::unique_ptr<Highscore> fromJson(const nlohmann::json& j);
     nlohmann::json toJson() const;
