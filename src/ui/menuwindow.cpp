@@ -234,7 +234,7 @@ bool MenuWindow::savePlayer() {
     QString filePath = QFileDialog::getSaveFileName(
         this,
         tr("Save player"),
-        QString(),
+        Settings::instance().getCurrentPlayer()->getName().append(".json"),
         tr("JSON files (*.json)") // tr for possible translation later
     );
 

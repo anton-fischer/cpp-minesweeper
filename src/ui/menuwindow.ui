@@ -50,6 +50,12 @@
             <height>40</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="contextMenuPolicy">
            <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
           </property>
@@ -225,7 +231,14 @@
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QLCDNumber" name="lcd_hardGamesWon"/>
+                <widget class="QLCDNumber" name="lcd_hardGamesWon">
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::SegmentStyle::Flat</enum>
+                 </property>
+                </widget>
                </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="lbl_bombsHit">
@@ -242,7 +255,14 @@
                 </widget>
                </item>
                <item row="3" column="1">
-                <widget class="QLCDNumber" name="lcd_customGamesWon"/>
+                <widget class="QLCDNumber" name="lcd_customGamesWon">
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::SegmentStyle::Flat</enum>
+                 </property>
+                </widget>
                </item>
                <item row="5" column="0">
                 <widget class="QLabel" name="lbl_flagsPlaced">
@@ -252,7 +272,14 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QLCDNumber" name="lcd_easyGamesWon"/>
+                <widget class="QLCDNumber" name="lcd_easyGamesWon">
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::SegmentStyle::Flat</enum>
+                 </property>
+                </widget>
                </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="lbl_easyGamesWon">
@@ -262,13 +289,40 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QLCDNumber" name="lcd_mediumGamesWon"/>
+                <widget class="QLCDNumber" name="lcd_mediumGamesWon">
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::SegmentStyle::Flat</enum>
+                 </property>
+                </widget>
                </item>
                <item row="6" column="1">
-                <widget class="QLCDNumber" name="lcd_tilesUncovered"/>
+                <widget class="QLCDNumber" name="lcd_tilesUncovered">
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Shadow::Raised</enum>
+                 </property>
+                 <property name="smallDecimalPoint">
+                  <bool>false</bool>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::SegmentStyle::Flat</enum>
+                 </property>
+                </widget>
                </item>
                <item row="4" column="1">
-                <widget class="QLCDNumber" name="lcd_bombsHit"/>
+                <widget class="QLCDNumber" name="lcd_bombsHit">
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::SegmentStyle::Flat</enum>
+                 </property>
+                </widget>
                </item>
                <item row="1" column="0">
                 <widget class="QLabel" name="lbl_mediumGamesWon">
@@ -285,7 +339,17 @@
                 </widget>
                </item>
                <item row="5" column="1">
-                <widget class="QLCDNumber" name="lcd_flagsPlaced"/>
+                <widget class="QLCDNumber" name="lcd_flagsPlaced">
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Shadow::Raised</enum>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::SegmentStyle::Flat</enum>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -296,6 +360,18 @@
         </item>
         <item>
          <widget class="QGroupBox" name="gbx_quests">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>150</height>
+           </size>
+          </property>
           <property name="title">
            <string>Quests</string>
           </property>

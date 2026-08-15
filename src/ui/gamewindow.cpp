@@ -370,10 +370,13 @@ bool GameWindow::loadBoard() {
 bool GameWindow::saveBoard() {
     assert(nullptr != board);
 
+    QString currentDifficulty = DifficultyUtil::difficultyToString(Settings::instance().getDifficulty());
+    QString currentDate = QDate::currentDate().toString("yyyy-MM-dd");
+
     QString filePath = QFileDialog::getSaveFileName(
         this,
         tr("Save board"),
-        QString(),
+        currentDifficulty.append("-").append(currentDate).append(".json"),
         tr("JSON files (*.json)") // tr in case for possible translation later
     );
 

@@ -10,8 +10,8 @@ Quest::Quest(QObject* parent) : QObject(parent) {
 }
 
 void Quest::generateQuest() {
-    this->type =   static_cast<QuestType>  (QRandomGenerator::global()->bounded(1, static_cast<int>(QuestType::_END)));
-    this->rarity = static_cast<QuestRarity>(QRandomGenerator::global()->bounded(1, static_cast<int>(QuestRarity::_END)));
+    this->type =   static_cast<QuestType>  (QRandomGenerator::global()->bounded(0, static_cast<int>(QuestType::_END)));
+    this->rarity = static_cast<QuestRarity>(QRandomGenerator::global()->bounded(0, static_cast<int>(QuestRarity::_END)));
 
     auto& questTypeData =   TYPE_CONVERSION_TABLE[static_cast<int>(type)];
     auto& questRarityData = RARITY_CONVERSION_TABLE[static_cast<int>(rarity)];

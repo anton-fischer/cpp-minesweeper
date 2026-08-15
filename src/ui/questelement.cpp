@@ -28,21 +28,29 @@ void QuestElement::updateQuest()
         case QuestRarity::COMMON: {
             ui->lbl_rarity->setText("C");
             ui->lbl_rarity->setStyleSheet("color: #20d300;");
+            ui->wdg_inner->setStyleSheet("#wdg_inner{ background: qlineargradient(x1:1, y1:0, x2:0, y2:0,stop:0 rgba(32,211,0,255),stop:1 rgba(32,211,0,0)); }");
+            ui->progressBar->setStyleSheet("QProgressBar{ border: 2px solid #555; border-radius: 5px; text-align: center; } QProgressBar::chunk { background-color: #20d300; width: 20px; }");
             break;
         }
         case QuestRarity::RARE: {
             ui->lbl_rarity->setText("R");
             ui->lbl_rarity->setStyleSheet("color: #0083d3;");
+            ui->wdg_inner->setStyleSheet("#wdg_inner{ background: qlineargradient(x1:1, y1:0, x2:0, y2:0,stop:0 rgba(0,131,211,255),stop:1 rgba(0,131,211,0)); }");
+            ui->progressBar->setStyleSheet("QProgressBar{ border: 2px solid #555; border-radius: 5px; text-align: center; } QProgressBar::chunk { background-color: #0083d3; width: 20px; }");
             break;
         }
         case QuestRarity::EPIC: {
             ui->lbl_rarity->setText("E");
             ui->lbl_rarity->setStyleSheet("color: #b700d3;");
+            ui->wdg_inner->setStyleSheet("#wdg_inner{ background: qlineargradient(x1:1, y1:0, x2:0, y2:0,stop:0 rgba(183,0,211,255),stop:1 rgba(183,0,211,0)); }");
+            ui->progressBar->setStyleSheet("QProgressBar{ border: 2px solid #555; border-radius: 5px; text-align: center; } QProgressBar::chunk { background-color: #b700d3; width: 20px; }");
             break;
         }
         case QuestRarity::LEGENDARY: {
             ui->lbl_rarity->setText("SR");
             ui->lbl_rarity->setStyleSheet("color: #FFC800;");
+            ui->wdg_inner->setStyleSheet("#wdg_inner{ background: qlineargradient(x1:1, y1:0, x2:0, y2:0,stop:0 rgba(255,200,0,255),stop:1 rgba(255,200,0,0)); }");
+            ui->progressBar->setStyleSheet("QProgressBar{ border: 2px solid #555; border-radius: 5px; text-align: center; } QProgressBar::chunk { background-color: #FFC800; width: 20px; }");
             break;
         }
         default: assert(false);

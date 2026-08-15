@@ -93,6 +93,18 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true">QProgressBar {
+        border: 2px solid #555;
+        border-radius: 5px;
+        text-align: center;
+        height: 20px;
+    }
+    QProgressBar::chunk {
+        background-color: #22b34d;
+        border-radius: 5px;
+    }</string>
+       </property>
        <property name="value">
         <number>0</number>
        </property>
