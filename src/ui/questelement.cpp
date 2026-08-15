@@ -22,6 +22,10 @@ void QuestElement::updateQuest()
     ui->lbl_title->setText(quest->generateObjectiveString());
     ui->lbl_reward->setText(QString("[%1XP]").arg(quest->getReward()));
 
+    ui->progressBar->setMaximum(quest->getGoal());
+    ui->progressBar->setValue(quest->getProgress());
+    ui->progressBar->setToolTip(QString("Progress: [%1/%2]").arg(quest->getProgress()).arg(quest->getGoal()));
+
     static_assert(QUEST_RARITY_ENUM_GUARD == static_cast<int>(QuestRarity::_END), "QuestRarity enum version mismatch");
     switch (quest->getRarity())
     {
@@ -55,9 +59,6 @@ void QuestElement::updateQuest()
         }
         default: assert(false);
     }
-
-    ui->progressBar->setMaximum(quest->getGoal());
-    ui->progressBar->setValue(quest->getProgress());
 }
 
 void QuestElement::on_btn_reroll_clicked()

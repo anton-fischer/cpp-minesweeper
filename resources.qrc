@@ -1,6 +1,9 @@
 <RCC>
     <qresource prefix="/images">
         <file>resources/icons8-minesweeper-96.png</file>
+        <file>resources/smiley-1.png</file>
+        <file>resources/smiley-2.png</file>
+        <file>resources/smiley-3.png</file>
     </qresource>
     <qresource prefix="/styles">
         <file>resources/darkstyle.qss</file>

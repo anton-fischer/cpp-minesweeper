@@ -15,6 +15,7 @@ LevelElement::LevelElement(QWidget* parent)
 
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(0);
+    ui->progressBar->setToolTip(QString("Progress: [0XP/100XP]"));
 }
 
 LevelElement::LevelElement(Player* player, QWidget* parent)
@@ -46,6 +47,7 @@ void LevelElement::updatePlayer(Player* newPlayer)
 
     ui->progressBar->setMaximum(player->getMaxXp());
     ui->progressBar->setValue(player->getCurrentXp());
+    ui->progressBar->setToolTip(QString("Progress: [%1XP/%2XP]").arg(player->getCurrentXp()).arg(player->getMaxXp()));
 }
 
 void LevelElement::playerLevelUp()
@@ -54,9 +56,11 @@ void LevelElement::playerLevelUp()
     ui->lbl_next->setText(QString("Level %1").arg(player->getLevel() + 1));
 
     ui->progressBar->setMaximum(player->getMaxXp());
+    ui->progressBar->setToolTip(QString("Progress: [%1XP/%2XP]").arg(player->getCurrentXp()).arg(player->getMaxXp()));
 }
 
 void LevelElement::playerXpChange()
 {
     ui->progressBar->setValue(player->getCurrentXp());
+    ui->progressBar->setToolTip(QString("Progress: [%1XP/%2XP]").arg(player->getCurrentXp()).arg(player->getMaxXp()));
 }

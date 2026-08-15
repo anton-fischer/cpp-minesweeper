@@ -24,6 +24,7 @@ GameWindow::GameWindow(QWidget* parent) : GameWindow(nullptr, parent) {
 GameWindow::GameWindow(Board* startBoard, QWidget* parent) : QMainWindow(parent), ui(new Ui::GameWindow) {
     ui->setupUi(this);
     ui->progressBar_progress->setValue(0);
+    ui->progressBar_progress->setToolTip(QString("Progress: Game not started yet!"));
     ui->vbx_gamelog->setAlignment(Qt::AlignTop);
 
     this->setWindowTitle("Minesweeper");
@@ -82,7 +83,7 @@ void GameWindow::createNewBoard(Board* newBoard) {
     showStatusBarMessage("Successfully created new board", 5000);
 
     this->setWindowTitle(QString("Minesweeper - %1").arg(DifficultyUtil::difficultyToString(board->getDifficulty())));
-    ui->lbl_xpBonus->setText(QString("XP Bonus: %1x XP").arg(DifficultyUtil::getDifficultyXpMultiplier(board->getDifficulty())));
+    ui->lbl_xpBonus->setText(QString("XP-Bonus: %1x XP").arg(DifficultyUtil::getDifficultyXpMultiplier(board->getDifficulty())));
 
     //this->resize(this->sizeHint()); // resize in case board size changed
 }
@@ -207,6 +208,8 @@ void GameWindow::tileUpdated(unsigned int x, unsigned int y) {
     }
 
     ui->progressBar_progress->setValue(board->getProgress());
+    ui->progressBar_progress->setToolTip(QString("Progress: [%1/%2] tiles uncovered").arg(board->getProgress()).arg(board->getBoardSizeX() * board->getBoardSizeY()));
+
     ui->lcd_flagCount->display(static_cast<int>(board->getFlagCount()));
 
     //qDebug() << QString("Tile at x[%1] y[%2] updated to text [%3]").arg(x).arg(y).arg(btn->text());
@@ -235,7 +238,16 @@ void GameWindow::boardUpdated() {
     ui->progressBar_progress->setMaximum(sizeX * sizeY);
     ui->lcd_flagCount->display(static_cast<int>(board->getFlagCount()));
     ui->lcd_currentScore->display(0);
-    ui->btn_status->setText("😊");
+
+    QIcon icon;
+    QPixmap pix(":/images/resources/smiley-1.png");
+
+    icon.addPixmap(pix, QIcon::Normal);
+    icon.addPixmap(pix, QIcon::Disabled);
+    icon.addPixmap(pix, QIcon::Active);
+    icon.addPixmap(pix, QIcon::Selected);
+
+    ui->btn_status->setIcon(icon);
 
     boardGridTiles.clear();
     boardGridTiles.resize(sizeY, std::vector<TileButton*>(sizeX, nullptr));
@@ -269,7 +281,16 @@ void GameWindow::bombHit() {
     auto& player = Settings::instance().getCurrentPlayer();
 
     ui->grid->setDisabled(true);
-    ui->btn_status->setText("😖");
+
+    QIcon icon;
+    QPixmap pix(":/images/resources/smiley-2.png");
+
+    icon.addPixmap(pix, QIcon::Normal);
+    icon.addPixmap(pix, QIcon::Disabled);
+    icon.addPixmap(pix, QIcon::Active);
+    icon.addPixmap(pix, QIcon::Selected);
+
+    ui->btn_status->setIcon(icon);
 
     player->incrementAmountBombsHit(1);
     player->incrementAmountGamesPlayed(1);
@@ -288,7 +309,16 @@ void GameWindow::gameWon() {
     auto& player = Settings::instance().getCurrentPlayer();
 
     ui->grid->setDisabled(true);
-    ui->btn_status->setText("😎");
+
+    QIcon icon;
+    QPixmap pix(":/images/resources/smiley-3.png");
+
+    icon.addPixmap(pix, QIcon::Normal);
+    icon.addPixmap(pix, QIcon::Disabled);
+    icon.addPixmap(pix, QIcon::Active);
+    icon.addPixmap(pix, QIcon::Selected);
+
+    ui->btn_status->setIcon(icon);
 
     static_assert(DIFFICULTY_ENUM_GUARD == static_cast<int>(Difficulty::_END), "Difficulty enum version mismatch");
 

@@ -187,6 +187,12 @@
             <height>30</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Reroll this quest</string>
+          </property>
+          <property name="statusTip">
+           <string/>
+          </property>
           <property name="text">
            <string>🔄️</string>
           </property>

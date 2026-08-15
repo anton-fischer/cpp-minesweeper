@@ -77,7 +77,8 @@ void HighscoreDialog::addHighscore(Highscore* highscore) {
 
     // Column 5: Replay Button
     QToolButton* btnReplay = new QToolButton();
-    btnReplay->setText("🔄 Replay");
+    btnReplay->setText("Replay");
+    btnReplay->setToolTip("Play another game with this configuration");
     btnReplay->setMinimumSize(30, 30);
 
     connect(btnReplay, &QToolButton::clicked, this, [highscore, this]() {
@@ -92,7 +93,8 @@ void HighscoreDialog::addHighscore(Highscore* highscore) {
 
     // Column 5: Delete Button
     QToolButton* btnDelete = new QToolButton();
-    btnDelete->setText("❌ Delete️");
+    btnDelete->setText("Delete️");
+    btnDelete->setToolTip("Delete this highscore");
     btnDelete->setMinimumSize(30, 30);
 
     connect(btnDelete, &QToolButton::clicked, this, [highscore, this]() {
