@@ -1,43 +1,42 @@
 {
-    "saveVersion": 1,
-
-    "name" : "asd",
-    
+    "name": "Player",
     "progress": {
-        "level": 0,
-        "maxXp": 100,
-        "currentXp": 40
+        "currentXp": 121,
+        "level": 2,
+        "maxXp": 225
     },
-
-    "stats" : {
-        "amountEasyGamesWon" : 0,
-        "amountMediumGamesWon" : 0,
-        "amountHardGamesWon" : 0,
-        "amountCustomGamesWon" : 0,
-        "amountGamesPlayed" : 0,
-        "amountBombsHit" : 0,
-        "amountFlagsPlaced" : 0,
-        "amountTilesUncovered" : 0
-    },
-
-    "quests" : [
+    "quests": [
         {
-            "type" : "PLAY_GAMES",
-            "goal" : 1,
-            "reward" : 1,
-            "progress" : 1
+            "goal": 6,
+            "progress": 1,
+            "rarity": "EPIC",
+            "reward": 384,
+            "type": "WIN GAMES"
         },
         {
-            "type" : "PLAY_GAMES",
-            "goal" : 1,
-            "reward" : 1,
-            "progress" : 1
+            "goal": 480,
+            "progress": 71,
+            "rarity": "LEGENDARY",
+            "reward": 1613,
+            "type": "UNCOVER TILES"
         },
         {
-            "type" : "PLAY_GAMES",
-            "goal" : 1,
-            "reward" : 1,
-            "progress" : 1
+            "goal": 18,
+            "progress": 1,
+            "rarity": "COMMON",
+            "reward": 144,
+            "type": "PLAY GAMES"
         }
-    ]
+    ],
+    "saveVersion": 1,
+    "stats": {
+        "amountBombsHit": 0,
+        "amountCustomGamesWon": 0,
+        "amountEasyGamesWon": 1,
+        "amountFlagsPlaced": 10,
+        "amountGamesPlayed": 1,
+        "amountHardGamesWon": 0,
+        "amountMediumGamesWon": 0,
+        "amountTilesUncovered": 71
+    }
 }
