@@ -135,6 +135,7 @@ void MenuWindow::startGame(Highscore* highscore) {
     } else {
         window = new GameWindow(new Board(highscore));
     }
+    window->setAttribute(Qt::WA_DeleteOnClose); // avoid memory leak
 
     window->show();
     this->close();

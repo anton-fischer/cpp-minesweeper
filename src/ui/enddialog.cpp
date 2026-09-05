@@ -11,7 +11,7 @@
 #include "core/quest.h"
 #include "core/settings.h"
 
-EndDialog::EndDialog(Player* player, bool gameWon, QWidget *parent) : player(player), gameWon(gameWon), QDialog(parent), ui(new Ui::EndDialog)
+EndDialog::EndDialog(Player* player, bool gameWon, QWidget *parent) : QDialog(parent), ui(new Ui::EndDialog), player(player), gameWon(gameWon)
 {
     ui->setupUi(this);
 
